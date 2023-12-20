@@ -8,6 +8,9 @@ module Moodle2CC::Moodle2
       type = node.%('qtype').text
       if c = @@subclasses[type]
         c.new.parse_question(node)
+      elsif Moodle2CC::MigrationReport.convert_unknown_qtypes?
+        c = @@subclasses['unknowntype']
+        c.new.parse_question(node)
       else
         raise "Unknown parser type: #{type}"
       end
@@ -19,7 +22,7 @@ module Moodle2CC::Moodle2
 
     # simple question types
     register_parser_type('description')
-    register_parser_type('essay')
+    #register_parser_type('essay')
     register_parser_type('random')
 
     def parse_question(node, question_type = nil)
@@ -41,6 +44,10 @@ module Moodle2CC::Moodle2
         question.stamp = parse_text(node, 'stamp')
         question.version = parse_text(node, 'version')
         question.hidden = parse_boolean(node, 'hidden')
+        question.penalty = parse_text(node, 'penalty')
+        question.hints = node.search('question_hints/question_hint').map do |n| 
+          parse_text(n, 'hint')
+        end
 
         question
       rescue Exception => e

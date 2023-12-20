@@ -15,6 +15,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "thor"
   gem.add_runtime_dependency "nokogiri"
   gem.add_runtime_dependency "rdiscount"
+  gem.add_runtime_dependency "progress_bar"
 
   gem.add_development_dependency "rake"
   gem.add_development_dependency "minitest"
@@ -24,6 +25,8 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "guard-minitest"
   gem.add_development_dependency "guard-rspec"
   gem.add_development_dependency "byebug"
+  gem.add_development_dependency "pry"
+  gem.add_development_dependency "pry-nav"
 
 
   gem.files         = Dir["{bin,lib}/**/*"] + ["Rakefile"]

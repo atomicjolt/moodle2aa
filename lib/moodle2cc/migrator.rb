@@ -13,6 +13,9 @@ module Moodle2CC
       @destination = destination
       @format = options['format'] || 'cc'
       Moodle2CC::Logger.logger = options['logger'] || ::Logger.new(STDOUT)
+      Moodle2CC::MigrationReport.siteurl = options['siteurl'] || ''
+      Moodle2CC::MigrationReport.options = options
+      Moodle2CC::MigrationReport.source = @source
       raise(Moodle2CC::Error, "'#{@source}' does not exist") unless File.exists?(@source)
       raise(Moodle2CC::Error, "'#{@destination}' is not a directory") unless File.directory?(@destination)
       raise(Moodle2CC::Error, "'#{@format}' is not a valid format. Please use 'cc' or 'canvas'.") unless ['cc', 'canvas'].include?(@format)
@@ -33,10 +36,14 @@ module Moodle2CC
     end
 
     def imscc_path
-      @converter.imscc_path
+      if @converter
+        @converter.imscc_path
+      end
     end
 
     def migrate_moodle_1_9
+      puts "SKIPPING MOODLE 1.9 ARCHIVE"
+      return
       backup = Moodle2CC::Moodle::Backup.read @source
       @converter = @converter_class.new backup, @destination
       @converter.convert
@@ -57,11 +64,21 @@ module Moodle2CC
           MOODLE_1_9
         end
       else
-        Zip::File.open(@source) do |zipfile|
-          if zipfile.find_entry('moodle_backup.xml')
+        type = `file "#{@source}"`
+        if /gzip/.match(type)
+          files = `tar tzf "#{@source}"`
+          if files.match(/^(\.|)moodle_backup\.xml/)
             MOODLE_2
-          elsif zipfile.find_entry('moodle.xml')
+          else
             MOODLE_1_9
+          end
+        else
+          Zip::File.open(@source) do |zipfile|
+            if zipfile.find_entry('moodle_backup.xml')
+              MOODLE_2
+            elsif zipfile.find_entry('moodle.xml')
+              MOODLE_1_9
+            end
           end
         end
       end

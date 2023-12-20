@@ -9,8 +9,9 @@ module Moodle2CC::Moodle2Converter
       @output_dir = output_dir
     end
 
-    def migrate
+    def migrate()
       @extractor.extract do |moodle_course|
+        Moodle2CC::MigrationReport.create(@output_dir, moodle_course);
         cc_course = convert_course(moodle_course)
         cc_course.files += convert_files(moodle_course.files)
         cc_course.pages += convert_pages(moodle_course.pages)
@@ -30,6 +31,8 @@ module Moodle2CC::Moodle2Converter
         cc_course.pages += convert_labels(moodle_course.labels)
         cc_course.pages += convert_glossaries(moodle_course)
 
+        cc_course.pages += convert_generic_activities(moodle_course) if Moodle2CC::MigrationReport.convert_unknown_activities?
+
         cc_course.pages.each do |canvas_page|
           canvas_page.href = generate_unique_resource_path(Moodle2CC::CanvasCC::Models::Page::WIKI_CONTENT, canvas_page.title)
         end
@@ -40,7 +43,9 @@ module Moodle2CC::Moodle2Converter
         convert_html!(cc_course, moodle_course)
 
         cc_course.resolve_question_references!
-        @path = Moodle2CC::CanvasCC::CartridgeCreator.new(cc_course).create(@output_dir)
+        @path = Moodle2CC::Learnosity::Migrator.new(@output_dir).migrate(moodle_course)
+        #@path = Moodle2CC::CanvasCC::CartridgeCreator.new(cc_course).create(@output_dir) if Moodle2CC::MigrationReport.generate_archive?
+        Moodle2CC::MigrationReport.close
       end
       @path
     end
@@ -108,6 +113,11 @@ module Moodle2CC::Moodle2Converter
     def convert_glossaries(moodle_course)
       glossary_converter = Moodle2CC::Moodle2Converter::GlossaryConverter.new(moodle_course)
       moodle_course.glossaries.map { |glossary| glossary_converter.convert(glossary) }
+    end
+
+    def convert_generic_activities(moodle_course)
+      generic_activity_converter = Moodle2CC::Moodle2Converter::GenericActivityConverter.new(moodle_course)
+      moodle_course.other_activities.map { |activity| generic_activity_converter.convert(activity) }
     end
 
     # convert quizzes to assessments

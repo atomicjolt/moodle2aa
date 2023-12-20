@@ -25,7 +25,11 @@ module Moodle2CC::Moodle2Converter
         elsif type && question_type = STANDARD_CONVERSIONS[type]
           self.convert_question(moodle_question, question_type)
         else
-          raise "Unknown converter type: #{type}"
+          report_add_warn(moodle_question, LEARNING, "unknown_question_type=#{type}", "question/preview.php?id=#{moodle_question.id}&courseid=#{report_current_course_id}")
+          # Pretend it's a description question and convert
+          # TODO: convert unknown question types to something
+          raise "Unknown converter type: #{type}" if !Moodle2CC::MigrationReport.convert_unknown_qtypes?
+          self.convert_question(moodle_question, 'text_only_question')
         end
       end
 

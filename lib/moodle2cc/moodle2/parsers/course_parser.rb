@@ -30,6 +30,10 @@ module Moodle2CC::Moodle2::Parsers
           course.grading_scales[node.attributes['id'].value.to_i] = parse_text(node, 'scale').split(',')
         end
       end
+      File.open(File.join(@backup_folder, 'moodle_backup.xml')) do |f|
+        doc = Nokogiri::XML(f)
+        course.url = parse_text(doc, '/moodle_backup/information/original_wwwroot')
+      end
 
       course
     end

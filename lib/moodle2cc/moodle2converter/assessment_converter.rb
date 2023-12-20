@@ -32,6 +32,19 @@ module Moodle2CC::Moodle2Converter
 
       canvas_assessment.question_references = moodle_quiz.question_instances
 
+      case moodle_quiz.preferred_behavior
+      when "adaptive","interactive","adaptivenopenalty"
+        report_add_warn(moodle_quiz, LEARNING, 'quiz_behaviour='+moodle_quiz.preferred_behavior)
+      when "deferredcbm","immediatecbm"
+        # TODO: check if canvas has CBM
+        report_add_warn(moodle_quiz, LEARNING, 'quiz_behaviour='+moodle_quiz.preferred_behavior)
+      when "deferredfeedback","immediatefeedback"
+        # these are ok
+        ;
+      else
+        report_add_warn(moodle_quiz, LEARNING, 'unknown quiz_hehavior='+moodle_quiz.preferred_behavior.to_s)
+      end
+
       canvas_assessment
     end
 

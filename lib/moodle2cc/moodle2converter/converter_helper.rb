@@ -18,6 +18,7 @@ module Moodle2CC
     SUMMARY_PAGE_SUFFIX = '_summary_page'
     EXTERNAL_URL_SUFFIX = '_external_url'
     LTI_SUFFIX = '_lti'
+    GENERIC_ACTIVITY_SUFFIX = '_generic_activity'
 
     ACTIVITY_LOOKUP = {
       Moodle2::Models::Page => {suffix: PAGE_SUFFIX, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_WIKI_PAGE},
@@ -36,7 +37,8 @@ module Moodle2CC
       Moodle2::Models::Glossary => {suffix: GLOSSARY_SUFFIX, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_WIKI_PAGE},
       Moodle2::Models::ExternalUrl => {suffix: EXTERNAL_URL_SUFFIX, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_EXTERNAL_URL},
       Moodle2::Models::Resource => {suffix: nil, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_ATTACHMENT},
-      Moodle2::Models::Lti => {suffix: LTI_SUFFIX, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_CONTEXT_EXTERNAL_TOOL}
+      Moodle2::Models::Lti => {suffix: LTI_SUFFIX, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_CONTEXT_EXTERNAL_TOOL},
+      Moodle2::Models::GenericActivity => {suffix: GENERIC_ACTIVITY_SUFFIX, content_type: CanvasCC::Models::ModuleItem::CONTENT_TYPE_WIKI_PAGE}
     }
 
     MAX_TITLE_LENGTH = 250
@@ -110,6 +112,25 @@ module Moodle2CC
       # unicode characters at the end.
       truncated = text[0,actual_length][/.{0,#{actual_length}}/mu]
       truncated + ellipsis
+    end
+
+    LEARNING = Moodle2CC::MigrationReport::LEARNING
+    TEACHING = Moodle2CC::MigrationReport::TEACHING
+    OTHER = Moodle2CC::MigrationReport::OTHER
+
+    def report_add_warn(model, edulevel, message, url=nil, name=nil)
+      if !name && model.respond_to?(:name)
+        name = model.name
+      end
+      if !url && model.respond_to?(:module_id)
+        mod = model.class.to_s.downcase.gsub(/^.*::/, '')
+        url = "mod/#{mod}/view.php?id=#{model.module_id}"
+      end
+      Moodle2CC::MigrationReport.add(model, edulevel, message, url, name)
+    end
+
+    def report_current_course_id()
+      Moodle2CC::MigrationReport.moodle_course_id
     end
 
   end

@@ -18,3 +18,4 @@ test/tmp/*
 !test/tmp/.gitkeep
 test/version_tmp
 tmp
+vendor

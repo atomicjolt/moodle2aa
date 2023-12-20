@@ -16,6 +16,20 @@ module Moodle2CC::Moodle2
         tolerance = parse_text(nr_node, 'tolerance')
         question.tolerances[answer_id] = tolerance
       end
+      
+      q_node.search('numerical_units/numerical_unit').each do |nr_node|
+        unit = parse_text(nr_node, 'unit')
+        multiplier = parse_text(nr_node, 'multiplier')
+        question.units << {unit: unit, multiplier: multiplier.to_f}
+      end
+      
+      q_node.search('numerical_options/numerical_option').each do |nr_node|
+        question.showunits = parse_text(nr_node, 'showunits')
+        question.unitsleft = parse_text(nr_node, 'unitsleft')
+        question.unitgradingtype = parse_text(nr_node, 'unitgradingtype')
+        question.unitpenalty = parse_boolean(nr_node, 'unitpenalty')
+      end
+
 
       question
     end

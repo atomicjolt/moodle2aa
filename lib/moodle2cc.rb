@@ -12,10 +12,15 @@ require 'securerandom'
 
 require 'moodle2cc/error'
 require 'moodle2cc/logger'
+require 'moodle2cc/migration_report'
 require 'moodle2cc/migrator'
-require 'moodle2cc/output_logger'
 
 require 'moodle2cc/moodle2'
+
+require 'moodle2cc/learnosity/converters.rb'
+require 'moodle2cc/learnosity/models.rb'
+require 'moodle2cc/learnosity/writers.rb'
+require 'moodle2cc/learnosity/migrator.rb'
 
 module Moodle2CC
   class OpenStruct < ::OpenStruct
@@ -132,5 +137,6 @@ module Moodle2CC
     autoload :GlossaryConverter, 'moodle2cc/moodle2converter/glossary_converter'
     autoload :LabelConverter, 'moodle2cc/moodle2converter/label_converter'
     autoload :WikiConverter, 'moodle2cc/moodle2converter/wiki_converter'
+    autoload :GenericActivityConverter, 'moodle2cc/moodle2converter/generic_activity_converter'
   end
 end

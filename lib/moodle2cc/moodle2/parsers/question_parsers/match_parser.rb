@@ -18,6 +18,11 @@ module Moodle2CC::Moodle2
         }
       end
 
+      question.shuffle = parse_boolean(node.search('matchoptions'), 'shuffleanswers')
+      question.correctfeedback = parse_text(node.search('matchoptions'), 'correctfeedback')
+      question.partiallycorrectfeedback = parse_text(node.search('matchoptions'), 'partiallycorrectfeedback')
+      question.incorrectfeedback = parse_text(node.search('matchoptions'), 'incorrectfeedback')
+
       question
     end
 

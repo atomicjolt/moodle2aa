@@ -46,6 +46,7 @@ module Moodle2CC::Moodle2
       parse_external_urls(work_dir, course)
       parse_resources(work_dir, course)
       parse_lti_links(work_dir, course)
+      parse_other_activities(work_dir, course) if Moodle2CC::MigrationReport.convert_unknown_activities?
       collect_files_for_resources(course)
       collect_activities_for_sections(course.sections, course.activities)
       course
@@ -57,11 +58,18 @@ module Moodle2CC::Moodle2
           f_path=File.join(work_dir, f.name)
         end
       else
-        Zip::File.open(@backup_path) do |zip_file|
-          zip_file.each do |f|
-            f_path=File.join(work_dir, f.name)
-            FileUtils.mkdir_p(File.dirname(f_path))
-            zip_file.extract(f, f_path) unless File.exist?(f_path)
+        type = `file "#{@backup_path}"`
+        if / Zip archive /i.match(type) 
+          Zip::File.open(@backup_path) do |zip_file|
+            zip_file.each do |f|
+              f_path=File.join(work_dir, f.name)
+              FileUtils.mkdir_p(File.dirname(f_path))
+              zip_file.extract(f, f_path) unless File.exist?(f_path)
+            end
+          end
+        else
+          Dir.chdir(work_dir) do
+            system("tar xzf '#{@backup_path}'")
           end
         end
       end
@@ -231,5 +239,28 @@ module Moodle2CC::Moodle2
       end
     end
 
+    # Activities we know how to convert.
+    KNOWN_ACTIVITIES = %w[page forum assignment book folder quiz label resource glossary url choice questionnaire feedback wikis lti]
+
+    def parse_other_activities(work_dir, course)
+      other = course_activity_types(work_dir, course) - KNOWN_ACTIVITIES
+      other.each do |type|
+        course.other_activities += Moodle2CC::Moodle2::Parsers::GenericActivityParser.new(work_dir).parse(type)
+      end
+
+    end
+
+    def course_activity_types(work_dir, course)
+      begin
+        File.open(File.join(work_dir, Moodle2CC::Moodle2::Extractor::MOODLE_BACKUP_XML)) do |f|
+          moodle_backup_xml = Nokogiri::XML(f)
+          activities = moodle_backup_xml.search('/moodle_backup/information/contents/activities/activity')
+          activities = activities.map { |activity| activity./('modulename').text }
+          activities.to_set
+        end
+      rescue
+        []
+      end
+    end
   end
 end

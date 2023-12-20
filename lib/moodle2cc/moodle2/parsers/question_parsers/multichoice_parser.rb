@@ -10,6 +10,10 @@ module Moodle2CC::Moodle2
       question.answers += node.search('answers/answer').map { |n| answer_parser.parse(n) }
 
       question.single = parse_boolean(node, 'plugin_qtype_multichoice_question/multichoice/single')
+      question.shuffle = parse_boolean(node.search('multichoice'), 'shuffleanswers')
+      question.correctfeedback = parse_text(node.search('multichoice'), 'correctfeedback')
+      question.partiallycorrectfeedback = parse_text(node.search('multichoice'), 'partiallycorrectfeedback')
+      question.incorrectfeedback = parse_text(node.search('multichoice'), 'incorrectfeedback')
 
       question
     end

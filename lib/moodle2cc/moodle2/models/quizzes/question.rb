@@ -14,6 +14,11 @@ module Moodle2CC::Moodle2::Models::Quizzes
         q = self.new
         q.type = type
         q
+      elsif Moodle2CC::MigrationReport.convert_unknown_qtypes?
+        c = @@subclasses['unknowntype']
+        q = c.new
+        q.type = type
+        q
       else
         raise "Unknown question type: #{type}"
       end
@@ -25,9 +30,13 @@ module Moodle2CC::Moodle2::Models::Quizzes
 
     attr_accessor :id, :parent, :name, :question_text, :question_text_format, :general_feedback, :default_mark, :max_mark,
                   :penalty, :qtype, :length, :stamp, :version, :hidden, :answers, :type
+    attr_accessor :category_name  # for learnosity random conversion
+    attr_accessor :category_id  # for learnosity synchronized calc conversion
+    attr_accessor :hints, :penalty
 
     def initialize
       @answers = []
+      @hints = []
     end
   end
 end
