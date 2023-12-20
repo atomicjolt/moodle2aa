@@ -1,3 +1,14 @@
+# LEARNOSITY
+
+This branch is adapted from moodle2cc to convert moodle to learnosity format.  It was meant as a one-time
+conversion and isn't done particularly well.  YMMV
+
+Usage
+
+  moodle2cc migrate $PWD/moodle.mbz OUT/
+
+
+
 # Moodle2CC
 
 moodle2cc will convert Moodle 1.9 backup files into IMS Common Cartridge 1.1
