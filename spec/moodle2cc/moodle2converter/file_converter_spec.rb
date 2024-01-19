@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::FileConverter do
 
     it 'should convert a moodle file to a canvas file' do

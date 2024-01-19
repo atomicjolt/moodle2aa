@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'zip'
-require 'moodle2cc'
+require 'moodle2aa'
 
 module TestHelper
 
@@ -19,9 +19,9 @@ module TestHelper
 
   def convert_moodle_backup(format='cc', backup_name='moodle_backup')
     raise "must be 'cc' or 'canvas'" unless ['cc', 'canvas'].include?(format)
-    converter_class = format == 'cc' ? Moodle2CC::CC::Converter : Moodle2CC::Canvas::Converter
+    converter_class = format == 'cc' ? Moodle2AA::CC::Converter : Moodle2AA::Canvas::Converter
     @backup_path = create_moodle_backup_zip(backup_name)
-    @backup = Moodle2CC::Moodle::Backup.read @backup_path
+    @backup = Moodle2AA::Moodle::Backup.read @backup_path
     @export_dir = File.expand_path("../../test/tmp", __FILE__)
     @converter = converter_class.new @backup, @export_dir
     @converter.convert

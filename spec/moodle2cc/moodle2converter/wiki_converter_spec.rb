@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter
+module Moodle2AA::Moodle2Converter
   describe WikiConverter do
-    let(:moodle_wiki){Moodle2CC::Moodle2::Models::Wiki.new}
+    let(:moodle_wiki){Moodle2AA::Moodle2::Models::Wiki.new}
 
     it 'converts a moodle wiki to canvas pages' do
       moodle_wiki.id = 'page_id'

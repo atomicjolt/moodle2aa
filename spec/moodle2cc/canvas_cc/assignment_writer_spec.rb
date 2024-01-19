@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Moodle2CC::CanvasCC::AssignmentWriter do
-  subject { Moodle2CC::CanvasCC::AssignmentWriter.new(work_dir, assignment) }
+describe Moodle2AA::CanvasCC::AssignmentWriter do
+  subject { Moodle2AA::CanvasCC::AssignmentWriter.new(work_dir, assignment) }
   let(:work_dir) { Dir.mktmpdir }
-  let(:assignment) { Moodle2CC::CanvasCC::Models::Assignment.new }
+  let(:assignment) { Moodle2AA::CanvasCC::Models::Assignment.new }
 
   after(:each) do
     FileUtils.rm_r work_dir

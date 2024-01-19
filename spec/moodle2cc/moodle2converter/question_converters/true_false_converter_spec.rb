@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe TrueFalseConverter do
 
     it 'converts truefalse questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('truefalse')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('truefalse')
       moodle_question.id = 'something'
 
-      true_answer = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      true_answer = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       true_answer.id = 'tr00'
-      false_answer = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      false_answer = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       false_answer.id = 'furse'
       moodle_question.answers = [true_answer, false_answer]
       moodle_question.true_answer = true_answer.id

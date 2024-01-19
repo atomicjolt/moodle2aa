@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Moodle2CC::Moodle2::Parsers::ParserHelper do
+describe Moodle2AA::Moodle2::Parsers::ParserHelper do
   class HelperClass
-    include Moodle2CC::Moodle2::Parsers::ParserHelper
+    include Moodle2AA::Moodle2::Parsers::ParserHelper
   end
 
   subject { HelperClass.new }
@@ -40,7 +40,7 @@ describe Moodle2CC::Moodle2::Parsers::ParserHelper do
     end
 
     it "replaces the XML_NULL_VALUE with nil" do
-      allow(child_node).to receive(:text) { Moodle2CC::Moodle2::Parsers::ParserHelper::XML_NULL_VALUE }
+      allow(child_node).to receive(:text) { Moodle2AA::Moodle2::Parsers::ParserHelper::XML_NULL_VALUE }
       expect(subject.parse_text(parent_node, 'path')).to eq nil
     end
 

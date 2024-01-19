@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Moodle2CC::Moodle2::Parsers::BookParser do
-  subject { Moodle2CC::Moodle2::Parsers::BookParser.new(fixture_path(File.join('moodle2', 'backup'))) }
+describe Moodle2AA::Moodle2::Parsers::BookParser do
+  subject { Moodle2AA::Moodle2::Parsers::BookParser.new(fixture_path(File.join('moodle2', 'backup'))) }
 
   it "parses books" do
     book = subject.parse().first

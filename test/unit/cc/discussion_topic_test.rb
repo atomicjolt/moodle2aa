@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCCDiscussionTopic < MiniTest::Test
   include TestHelper
@@ -18,33 +18,33 @@ class TestUnitCCDiscussionTopic < MiniTest::Test
   def test_it_converts_id
     @mod.id = 567
 
-    discussion_topic = Moodle2CC::CC::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::CC::DiscussionTopic.new @mod
     assert_equal 567, discussion_topic.id
   end
 
   def test_it_converts_title
     @mod.name = "Announcements"
 
-    discussion_topic = Moodle2CC::CC::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::CC::DiscussionTopic.new @mod
     assert_equal "Announcements", discussion_topic.title
   end
 
   def test_it_converts_text
     @mod.intro = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
 
-    discussion_topic = Moodle2CC::CC::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::CC::DiscussionTopic.new @mod
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), discussion_topic.text
   end
 
   def test_it_has_an_identifier
     @mod.id = 123
 
-    discussion_topic = Moodle2CC::CC::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::CC::DiscussionTopic.new @mod
     assert_equal 'ifb967ca1271d3e119ae5e22d32eeae1b', discussion_topic.identifier
   end
 
   def test_it_creates_resource_in_imsmanifest
-    discussion_topic = Moodle2CC::CC::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::CC::DiscussionTopic.new @mod
     node = Builder::XmlMarkup.new
     xml = node.root do |root_node|
       discussion_topic.create_resource_node(node)
@@ -67,7 +67,7 @@ class TestUnitCCDiscussionTopic < MiniTest::Test
     @mod.intro = "<h1>Hello World</h1>"
 
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
-    discussion_topic = Moodle2CC::CC::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::CC::DiscussionTopic.new @mod
     discussion_topic.create_topic_xml(tmp_dir)
     xml = Nokogiri::XML(File.read(File.join(tmp_dir, "#{discussion_topic.identifier}.xml")))
 

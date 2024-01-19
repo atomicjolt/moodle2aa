@@ -1,5 +1,5 @@
 require 'spec_helper'
-module Moodle2CC::Moodle2::Models
+module Moodle2AA::Moodle2::Models
   describe Label do
 
     it_behaves_like 'it has an attribute for', :id
@@ -40,7 +40,7 @@ module Moodle2CC::Moodle2::Models
 
       it 'should convert to page if the intro text is too long' do
         subject.name = '<hr>'
-        subject.intro = ("a" * (Moodle2CC::Moodle2Converter::ConverterHelper::MAX_TITLE_LENGTH + 20))
+        subject.intro = ("a" * (Moodle2AA::Moodle2Converter::ConverterHelper::MAX_TITLE_LENGTH + 20))
 
         expect(subject.converted_title).to eq subject.intro
         expect(subject.convert_to_page?).to eq true
@@ -51,7 +51,7 @@ module Moodle2CC::Moodle2::Models
         subject.name = '<hr>'
         subject.intro = '<img src="somelinky">'
 
-        expect(subject.converted_title).to eq Moodle2CC::Moodle2::Models::Label::DEFAULT_PAGE_TITLE
+        expect(subject.converted_title).to eq Moodle2AA::Moodle2::Models::Label::DEFAULT_PAGE_TITLE
         expect(subject.convert_to_page?).to eq true
         expect(subject.convert_to_header?).to eq false
       end

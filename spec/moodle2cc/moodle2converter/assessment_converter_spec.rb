@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Moodle2CC::Moodle2Converter::AssessmentConverter do
+describe Moodle2AA::Moodle2Converter::AssessmentConverter do
 
   it 'converts a moodle2 quiz to a canvas assessment' do
-    moodle_quiz = Moodle2CC::Moodle2::Models::Quizzes::Quiz.new
+    moodle_quiz = Moodle2AA::Moodle2::Models::Quizzes::Quiz.new
     moodle_quiz.id = 'quiz id'
     moodle_quiz.name = 'Quiz naem'
     moodle_quiz.intro = '<p> stuff </p>'
@@ -36,7 +36,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
     expect(canvas_assessment.time_limit).to eq 2 # moodle time limit is in seconds
     expect(canvas_assessment.quiz_type).to eq 'practice_quiz'
     expect(canvas_assessment.question_references).to eq moodle_quiz.question_instances
-    expect(canvas_assessment.workflow_state).to eq Moodle2CC::CanvasCC::Models::WorkflowState::UNPUBLISHED
+    expect(canvas_assessment.workflow_state).to eq Moodle2AA::CanvasCC::Models::WorkflowState::UNPUBLISHED
 
     moodle_quiz.attempts_number = 0 # Infinite attempts
     moodle_quiz.grade_method = 4
@@ -47,7 +47,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
   end
 
   it 'converts a moodle2 choice to a canvas assessment' do
-    moodle_choice = Moodle2CC::Moodle2::Models::Choice.new
+    moodle_choice = Moodle2AA::Moodle2::Models::Choice.new
     moodle_choice.id = 'choice_id'
     moodle_choice.name = "i'm an silly choice"
     moodle_choice.intro = 'which of these arbitrary options do you like best?'
@@ -70,7 +70,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
     expect(canvas_assessment.allowed_attempts).to eq 1
     expect(canvas_assessment.scoring_policy).to eq 'keep_latest'
     expect(canvas_assessment.quiz_type).to eq 'survey'
-    expect(canvas_assessment.workflow_state).to eq Moodle2CC::CanvasCC::Models::WorkflowState::UNPUBLISHED
+    expect(canvas_assessment.workflow_state).to eq Moodle2AA::CanvasCC::Models::WorkflowState::UNPUBLISHED
 
     expect(canvas_assessment.items.count).to eq 1
     question = canvas_assessment.items.first
@@ -81,7 +81,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
   end
 
   it 'converts a moodle2 questionnaire to a canvas assessment' do
-    moodle_questionnaire = Moodle2CC::Moodle2::Models::Questionnaire.new
+    moodle_questionnaire = Moodle2AA::Moodle2::Models::Questionnaire.new
     moodle_questionnaire.id = 'questionnaire_id'
     moodle_questionnaire.name = "i'm an silly questionnaire"
     moodle_questionnaire.intro = 'i should be an ungraderded survey'
@@ -90,13 +90,13 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
     moodle_questionnaire.open_date = Time.parse('Sat, 08 Feb 2014 16:00:00 GMT').to_i.to_s
     moodle_questionnaire.close_date = Time.parse('Sat, 08 Feb 2014 18:00:00 GMT').to_i.to_s
 
-    question1 = Moodle2CC::Moodle2::Models::Questionnaire::Question.new
+    question1 = Moodle2AA::Moodle2::Models::Questionnaire::Question.new
     question1.id = '2'
     question1.name = 'q name'
     question1.content = 'quest 1'
     question1.type_id = '2'
 
-    question2 = Moodle2CC::Moodle2::Models::Questionnaire::Question.new
+    question2 = Moodle2AA::Moodle2::Models::Questionnaire::Question.new
     question2.id = '3'
     question2.name = 'q name 2'
     question2.content = 'question2 text'
@@ -117,7 +117,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
     expect(canvas_assessment.lock_at).to eq Time.parse('Sat, 08 Feb 2014 18:00:00 GMT')
     expect(canvas_assessment.scoring_policy).to eq 'keep_latest'
     expect(canvas_assessment.quiz_type).to eq 'survey'
-    expect(canvas_assessment.workflow_state).to eq Moodle2CC::CanvasCC::Models::WorkflowState::UNPUBLISHED
+    expect(canvas_assessment.workflow_state).to eq Moodle2AA::CanvasCC::Models::WorkflowState::UNPUBLISHED
 
     expect(canvas_assessment.items.count).to eq 2
 
@@ -141,7 +141,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
   end
 
   it "should convert a moodle2 feedback activity to an ungraded assessment" do
-    moodle_feedback = Moodle2CC::Moodle2::Models::Feedback.new
+    moodle_feedback = Moodle2AA::Moodle2::Models::Feedback.new
     moodle_feedback.id = 'feedback_id'
     moodle_feedback.name = "i'm an silly feedback"
     moodle_feedback.intro = 'i should be an ungraderded survey'
@@ -150,21 +150,21 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
     moodle_feedback.time_open = Time.parse('Sat, 08 Feb 2014 16:00:00 GMT').to_i.to_s
     moodle_feedback.time_close = Time.parse('Sat, 08 Feb 2014 18:00:00 GMT').to_i.to_s
 
-    question1 = Moodle2CC::Moodle2::Models::Feedback::Question.new
+    question1 = Moodle2AA::Moodle2::Models::Feedback::Question.new
     question1.id = '2'
     question1.name = 'actualy question'
     question1.label = 'q name'
     question1.type = 'multichoice'
     question1.presentation = 'r>>>>>Option 1\n|Option 2\n|Option 3'
 
-    question2 = Moodle2CC::Moodle2::Models::Feedback::Question.new
+    question2 = Moodle2AA::Moodle2::Models::Feedback::Question.new
     question2.id = '2'
     question2.name = 'actualy also question'
     question2.label = 'q name 2'
     question2.type = 'multichoicerated'
     question2.presentation = 'r>>>>>1####Option1\n    |2####Option2\n     |3####Option3'
 
-    question3 = Moodle2CC::Moodle2::Models::Feedback::Question.new
+    question3 = Moodle2AA::Moodle2::Models::Feedback::Question.new
     question3.id = '2'
     question3.name = 'label label'
     question3.label = ''
@@ -183,7 +183,7 @@ describe Moodle2CC::Moodle2Converter::AssessmentConverter do
     expect(canvas_assessment.lock_at).to eq Time.parse('Sat, 08 Feb 2014 18:00:00 GMT')
     expect(canvas_assessment.scoring_policy).to eq 'keep_latest'
     expect(canvas_assessment.quiz_type).to eq 'survey'
-    expect(canvas_assessment.workflow_state).to eq Moodle2CC::CanvasCC::Models::WorkflowState::UNPUBLISHED
+    expect(canvas_assessment.workflow_state).to eq Moodle2AA::CanvasCC::Models::WorkflowState::UNPUBLISHED
 
     expect(canvas_assessment.items.count).to eq 3
 

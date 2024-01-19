@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCCAssessment < MiniTest::Test
   include TestHelper
@@ -9,7 +9,7 @@ class TestUnitCCAssessment < MiniTest::Test
   def setup
     convert_moodle_backup
     @mod = @backup.course.mods.find { |m| m.mod_type == "quiz" }
-    @assessment = Moodle2CC::CC::Assessment.new @mod
+    @assessment = Moodle2AA::CC::Assessment.new @mod
   end
 
   def teardown
@@ -18,19 +18,19 @@ class TestUnitCCAssessment < MiniTest::Test
 
   def test_it_converts_id
     @mod.id = 321
-    assessment = Moodle2CC::CC::Assessment.new @mod
+    assessment = Moodle2AA::CC::Assessment.new @mod
     assert_equal 321, assessment.id
   end
 
   def test_it_converts_title
     @mod.name = "First Quiz"
-    assessment = Moodle2CC::CC::Assessment.new @mod
+    assessment = Moodle2AA::CC::Assessment.new @mod
     assert_equal "First Quiz", assessment.title
   end
 
   def test_it_has_an_identifier
     @mod.id = 321
-    assessment = Moodle2CC::CC::Assessment.new @mod
+    assessment = Moodle2AA::CC::Assessment.new @mod
     assert_equal 'i058d7533a77712b6e7757b34e66df7fc', assessment.identifier
   end
 

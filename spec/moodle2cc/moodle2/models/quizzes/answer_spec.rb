@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Models::Quizzes
+module Moodle2AA::Moodle2::Models::Quizzes
   describe Answer do
 
     it_behaves_like 'it has an attribute for', :id

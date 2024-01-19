@@ -1,5 +1,5 @@
 require 'spec_helper'
-module Moodle2CC::Moodle2
+module Moodle2AA::Moodle2
   describe Parsers::QuestionParsers::MatchParser do
     let(:node) do
       xml = Nokogiri::XML(File.read(fixture_path(File.join('moodle2', 'backup', 'questions.xml'))))

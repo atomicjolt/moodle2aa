@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Moodle2CC::CanvasCC::Models::Assessment do
+describe Moodle2AA::CanvasCC::Models::Assessment do
 
   it_behaves_like 'it has an attribute for', :identifier
   it_behaves_like 'it has an attribute for', :title
@@ -30,13 +30,13 @@ describe Moodle2CC::CanvasCC::Models::Assessment do
     subject.title = 'My Assessment'
 
     cc_resource = subject.cc_assessment_resource
-    expect(cc_resource).to be_a_kind_of Moodle2CC::CanvasCC::Models::Resource
+    expect(cc_resource).to be_a_kind_of Moodle2AA::CanvasCC::Models::Resource
     expect(cc_resource.type).to eq 'imsqti_xmlv1p2/imscc_xmlv1p1/assessment'
     expect(cc_resource.identifier).to eq 'assessment_id'
     expect(cc_resource.dependencies).to include 'assessment_id_meta'
 
     canvas_resource = subject.canvas_assessment_resource
-    expect(canvas_resource).to be_a_kind_of Moodle2CC::CanvasCC::Models::Resource
+    expect(canvas_resource).to be_a_kind_of Moodle2AA::CanvasCC::Models::Resource
     expect(canvas_resource.files.count).to eq 2
     expect(canvas_resource.identifier).to eq 'assessment_id_meta'
     expect(canvas_resource.type).to eq 'associatedcontent/imscc_xmlv1p1/learning-application-resource'
@@ -54,19 +54,19 @@ describe Moodle2CC::CanvasCC::Models::Assessment do
       {:question => 'nonexistent', :grade => '4'}
     ]
 
-    qb1 = Moodle2CC::CanvasCC::Models::QuestionBank.new
-    q1 = Moodle2CC::CanvasCC::Models::Question.new
+    qb1 = Moodle2AA::CanvasCC::Models::QuestionBank.new
+    q1 = Moodle2AA::CanvasCC::Models::Question.new
     q1.original_identifier = '1'
-    q2 = Moodle2CC::CanvasCC::Models::Question.new
+    q2 = Moodle2AA::CanvasCC::Models::Question.new
     q2.original_identifier = '3'
     qb1.questions = [q1, q2]
 
-    qb2 = Moodle2CC::CanvasCC::Models::QuestionBank.new
-    q3 = Moodle2CC::CanvasCC::Models::Question.new
+    qb2 = Moodle2AA::CanvasCC::Models::QuestionBank.new
+    q3 = Moodle2AA::CanvasCC::Models::Question.new
     q3.original_identifier = '2'
     qb2.questions = [q3]
 
-    group = Moodle2CC::CanvasCC::Models::QuestionGroup.new
+    group = Moodle2AA::CanvasCC::Models::QuestionGroup.new
     group.selection_number = 4
     group.identifier = 'grouppy'
     group.questions = [q2]
@@ -90,26 +90,26 @@ describe Moodle2CC::CanvasCC::Models::Assessment do
         {:question => 'nonexistent', :grade => '4'}
     ]
 
-    qb1 = Moodle2CC::CanvasCC::Models::QuestionBank.new
-    q1 = Moodle2CC::CanvasCC::Models::Question.new
+    qb1 = Moodle2AA::CanvasCC::Models::QuestionBank.new
+    q1 = Moodle2AA::CanvasCC::Models::Question.new
     q1.identifier = '1'
-    q2 = Moodle2CC::CanvasCC::Models::Question.new
+    q2 = Moodle2AA::CanvasCC::Models::Question.new
     q2.identifier = '2'
 
     qb1.questions = [q1, q2]
     qb1.original_id = 'parent'
     qb1.random_question_references = ['random1', 'random2']
 
-    qb2 = Moodle2CC::CanvasCC::Models::QuestionBank.new
-    q3 = Moodle2CC::CanvasCC::Models::Question.new
+    qb2 = Moodle2AA::CanvasCC::Models::QuestionBank.new
+    q3 = Moodle2AA::CanvasCC::Models::Question.new
     q3.identifier = '3'
     qb2.parent_id = 'parent'
     qb2.questions = [q3]
 
-    qb3 = Moodle2CC::CanvasCC::Models::QuestionBank.new
-    q4 = Moodle2CC::CanvasCC::Models::Question.new
+    qb3 = Moodle2AA::CanvasCC::Models::QuestionBank.new
+    q4 = Moodle2AA::CanvasCC::Models::Question.new
     q4.identifier = '4'
-    q5 = Moodle2CC::CanvasCC::Models::Question.new
+    q5 = Moodle2AA::CanvasCC::Models::Question.new
     q5.identifier = '5'
     qb3.questions = [q4, q5]
     qb3.random_question_references = ['random3']
@@ -118,12 +118,12 @@ describe Moodle2CC::CanvasCC::Models::Assessment do
 
     expect(subject.items.count).to eq 2
     group1 = subject.items[0]
-    expect(group1.class).to eq Moodle2CC::CanvasCC::Models::QuestionGroup
+    expect(group1.class).to eq Moodle2AA::CanvasCC::Models::QuestionGroup
     expect(group1.selection_number).to eq 2
     expect(group1.questions.map(&:identifier)).to eq [q1, q2, q3].map(&:identifier)
 
     group2 = subject.items[1]
-    expect(group2.class).to eq Moodle2CC::CanvasCC::Models::QuestionGroup
+    expect(group2.class).to eq Moodle2AA::CanvasCC::Models::QuestionGroup
     expect(group2.selection_number).to eq 1
     expect(group2.questions.map(&:identifier)).to eq qb3.questions.map(&:identifier)
   end

@@ -7,20 +7,20 @@ shared_examples 'it has an attribute for' do |attribute, default_value = nil|
   end
 end
 
-shared_examples 'a Moodle2CC::CanvasCC::Models::Resource' do
-  it "by inheriting Moodle2CC::CanvasCC::Models::Resource" do
-    expect(described_class.ancestors).to include Moodle2CC::CanvasCC::Models::Resource
+shared_examples 'a Moodle2AA::CanvasCC::Models::Resource' do
+  it "by inheriting Moodle2AA::CanvasCC::Models::Resource" do
+    expect(described_class.ancestors).to include Moodle2AA::CanvasCC::Models::Resource
   end
 end
 
-shared_examples 'a Moodle2CC::Moodle2::Models::Quizzes::Question' do
-  it "by inheriting Moodle2CC::Moodle2::Models::Quizzes:Question" do
-    expect(described_class.ancestors).to include Moodle2CC::Moodle2::Models::Quizzes::Question
+shared_examples 'a Moodle2AA::Moodle2::Models::Quizzes::Question' do
+  it "by inheriting Moodle2AA::Moodle2::Models::Quizzes:Question" do
+    expect(described_class.ancestors).to include Moodle2AA::Moodle2::Models::Quizzes::Question
   end
 end
 
 shared_examples 'it is registered as a Question' do |type|
   it "for the type '#{type}'" do
-    expect(Moodle2CC::Moodle2::Models::Quizzes::Question.create(type)).to be_instance_of described_class
+    expect(Moodle2AA::Moodle2::Models::Quizzes::Question.create(type)).to be_instance_of described_class
   end
 end

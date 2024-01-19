@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Parsers
+module Moodle2AA::Moodle2::Parsers
   describe GlossaryParser do
-    subject(:parser) { Moodle2CC::Moodle2::Parsers::GlossaryParser.new(fixture_path(File.join('moodle2', 'backup')))}
+    subject(:parser) { Moodle2AA::Moodle2::Parsers::GlossaryParser.new(fixture_path(File.join('moodle2', 'backup')))}
     
     it 'parses glossaries' do
       glossaries = parser.parse

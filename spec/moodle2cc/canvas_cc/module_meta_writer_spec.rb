@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe ModuleMetaWriter do
 
     let(:canvas_module) { Models::CanvasModule.new }

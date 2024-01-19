@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   class DummyClass
     include Moodle2Converter::ConverterHelper
   end
@@ -55,7 +55,7 @@ module Moodle2CC
     describe '#generate_unique_identifier_for_activity' do
       before (:each) { allow(subject).to receive(:generate_unique_identifier_for) }
       it 'generates a unique identifier for a page' do
-        page = Moodle2CC::Moodle2::Models::Page.new
+        page = Moodle2AA::Moodle2::Models::Page.new
         page.id = 'id'
 
         subject.generate_unique_identifier_for_activity(page)
@@ -64,42 +64,42 @@ module Moodle2CC
       end
 
       it 'generates a unique identifier for a Quiz' do
-        quiz = Moodle2CC::Moodle2::Models::Quizzes::Quiz.new
+        quiz = Moodle2AA::Moodle2::Models::Quizzes::Quiz.new
         quiz.id = 'id'
         subject.generate_unique_identifier_for_activity(quiz)
         expect(subject).to have_received(:generate_unique_identifier_for).with('id', '_assessment')
       end
 
       it 'generates a unique identifier for a Choice' do
-        choice = Moodle2CC::Moodle2::Models::Choice.new
+        choice = Moodle2AA::Moodle2::Models::Choice.new
         choice.id = 'id'
         subject.generate_unique_identifier_for_activity(choice)
         expect(subject).to have_received(:generate_unique_identifier_for).with('id', '_choice_assessment')
       end
 
       it 'generates a unique identifier for a Questionnaire' do
-        questionnaire = Moodle2CC::Moodle2::Models::Questionnaire.new
+        questionnaire = Moodle2AA::Moodle2::Models::Questionnaire.new
         questionnaire.id = 'id'
         subject.generate_unique_identifier_for_activity(questionnaire)
         expect(subject).to have_received(:generate_unique_identifier_for).with('id', '_questionnaire_assessment')
       end
 
       it 'generates a unique identifier for an Assignment' do
-        assignment = Moodle2CC::Moodle2::Models::Assignment.new
+        assignment = Moodle2AA::Moodle2::Models::Assignment.new
         assignment.id = 'id'
         subject.generate_unique_identifier_for_activity(assignment)
         expect(subject).to have_received(:generate_unique_identifier_for).with('id', '_assignment')
       end
 
       it 'generates a unique identifier for a Folder' do
-        folder = Moodle2CC::Moodle2::Models::Folder.new
+        folder = Moodle2AA::Moodle2::Models::Folder.new
         folder.id = 'id'
         subject.generate_unique_identifier_for_activity(folder)
         expect(subject).to have_received(:generate_unique_identifier_for).with('id', '_folder')
       end
 
       it 'generates a unique identifier for a Forum' do
-        forum = Moodle2CC::Moodle2::Models::Forum.new
+        forum = Moodle2AA::Moodle2::Models::Forum.new
         forum.id = 'id'
         subject.generate_unique_identifier_for_activity(forum)
         expect(subject).to have_received(:generate_unique_identifier_for).with('id', '_discussion')
@@ -114,42 +114,42 @@ module Moodle2CC
 
     describe '#activity_content_type' do
       it 'looks up the content type for a page' do
-        page = Moodle2CC::Moodle2::Models::Page.new
+        page = Moodle2AA::Moodle2::Models::Page.new
         expect(subject.activity_content_type(page)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_WIKI_PAGE
       end
 
       it 'looks up the content type for a Quiz' do
-        quiz = Moodle2CC::Moodle2::Models::Quizzes::Quiz.new
+        quiz = Moodle2AA::Moodle2::Models::Quizzes::Quiz.new
         expect(subject.activity_content_type(quiz)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_QUIZ
       end
 
       it 'looks up the content type for a Choice' do
-        choice = Moodle2CC::Moodle2::Models::Choice.new
+        choice = Moodle2AA::Moodle2::Models::Choice.new
         expect(subject.activity_content_type(choice)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_QUIZ
       end
 
       it 'looks up the content type for a Questionnaire' do
-        questionnaire = Moodle2CC::Moodle2::Models::Questionnaire.new
+        questionnaire = Moodle2AA::Moodle2::Models::Questionnaire.new
         expect(subject.activity_content_type(questionnaire)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_QUIZ
       end
 
       it 'looks up the content type for an Assignment' do
-        assignment = Moodle2CC::Moodle2::Models::Assignment.new
+        assignment = Moodle2AA::Moodle2::Models::Assignment.new
         expect(subject.activity_content_type(assignment)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_ASSIGNMENT
       end
 
       it 'looks up the content type for a Folder' do
-        folder = Moodle2CC::Moodle2::Models::Folder.new
+        folder = Moodle2AA::Moodle2::Models::Folder.new
         expect(subject.activity_content_type(folder)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_WIKI_PAGE
       end
 
       it 'looks up the content type for a Forum' do
-        forum = Moodle2CC::Moodle2::Models::Forum.new
+        forum = Moodle2AA::Moodle2::Models::Forum.new
         expect(subject.activity_content_type(forum)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_DISCUSSION_TOPIC
       end
 
       it 'looks up the content type for a Resource' do
-        resource = Moodle2CC::Moodle2::Models::Resource.new
+        resource = Moodle2AA::Moodle2::Models::Resource.new
         expect(subject.activity_content_type(resource)).to eq CanvasCC::Models::ModuleItem::CONTENT_TYPE_ATTACHMENT
       end
 

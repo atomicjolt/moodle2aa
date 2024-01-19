@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe AssessmentWriter do
-    subject { Moodle2CC::CanvasCC::AssessmentWriter.new(work_dir, assessment) }
+    subject { Moodle2AA::CanvasCC::AssessmentWriter.new(work_dir, assessment) }
     let(:work_dir) { Dir.mktmpdir }
-    let(:assessment) { Moodle2CC::CanvasCC::Models::Assessment.new }
+    let(:assessment) { Moodle2AA::CanvasCC::Models::Assessment.new }
 
     after(:each) do
       FileUtils.rm_r work_dir
@@ -59,7 +59,7 @@ module Moodle2CC::CanvasCC
       assessment.time_limit = 10
       assessment.allowed_attempts = 2
 
-      question = Moodle2CC::CanvasCC::Models::Question.new
+      question = Moodle2AA::CanvasCC::Models::Question.new
       question.identifier = 42
       assessment.items = [question]
 

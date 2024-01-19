@@ -2,7 +2,7 @@ require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
 require 'test_wiki_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasWiki < MiniTest::Test
   include TestHelper
@@ -11,7 +11,7 @@ class TestUnitCanvasWiki < MiniTest::Test
   def setup
     convert_moodle_backup 'canvas'
     @mod = @backup.course.mods.find { |m| m.mod_type == "wiki" }
-    @wiki = Moodle2CC::Canvas::Wiki.new @mod
+    @wiki = Moodle2AA::Canvas::Wiki.new @mod
   end
 
   def teardown
@@ -19,12 +19,12 @@ class TestUnitCanvasWiki < MiniTest::Test
   end
 
   def test_it_inherits_from_cc
-    assert Moodle2CC::Canvas::Wiki.ancestors.include?(Moodle2CC::CC::Wiki), 'does not inherit from base CC class'
+    assert Moodle2AA::Canvas::Wiki.ancestors.include?(Moodle2AA::CC::Wiki), 'does not inherit from base CC class'
   end
 
   def test_it_converts_pages
     pages!
-    wiki = Moodle2CC::Canvas::Wiki.new @mod
+    wiki = Moodle2AA::Canvas::Wiki.new @mod
     assert_equal 2, wiki.pages.length
 
     assert_equal 'My Wiki', wiki.pages[0].title
@@ -40,7 +40,7 @@ class TestUnitCanvasWiki < MiniTest::Test
 
 
   def test_it_creates_item_in_module_meta
-    wiki = Moodle2CC::Canvas::Wiki.new @mod
+    wiki = Moodle2AA::Canvas::Wiki.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(wiki.create_module_meta_item_node(node, 5))
 
@@ -55,7 +55,7 @@ class TestUnitCanvasWiki < MiniTest::Test
   end
 
   def test_it_creates_wiki_html
-    wiki = Moodle2CC::Canvas::Wiki.new @mod
+    wiki = Moodle2AA::Canvas::Wiki.new @mod
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
     wiki.create_html(tmp_dir)
 

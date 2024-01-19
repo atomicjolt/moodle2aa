@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC::Models
+module Moodle2AA::CanvasCC::Models
   describe Page do
     subject(:page) { Page.new }
 
-    it_behaves_like 'a Moodle2CC::CanvasCC::Models::Resource'
+    it_behaves_like 'a Moodle2AA::CanvasCC::Models::Resource'
 
     it_behaves_like 'it has an attribute for', :workflow_state
     it_behaves_like 'it has an attribute for', :editing_roles
@@ -31,7 +31,7 @@ module Moodle2CC::CanvasCC::Models
     end
 
     it "truncates urls that are too long" do
-      expected = "#{'a' * Moodle2CC::CanvasCC::Models::Page::MAX_URL_LENGTH}"
+      expected = "#{'a' * Moodle2AA::CanvasCC::Models::Page::MAX_URL_LENGTH}"
       expect(page.class.convert_name_to_url('a' * 500)).to eq expected
     end
 

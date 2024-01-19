@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe NumericalConverter do
 
     it 'converts numerical questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('numerical')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('numerical')
       moodle_question.id = 'something'
 
       moodle_question.tolerances = [:mock_tolerances]

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe Moodle2CC::CanvasCC::PageWriter do
-  subject(:writer) { Moodle2CC::CanvasCC::PageWriter.new(work_dir, page) }
+describe Moodle2AA::CanvasCC::PageWriter do
+  subject(:writer) { Moodle2AA::CanvasCC::PageWriter.new(work_dir, page) }
   let(:work_dir) { Dir.mktmpdir }
-  let(:page) {Moodle2CC::CanvasCC::Models::Page.new}
+  let(:page) {Moodle2AA::CanvasCC::Models::Page.new}
 
   after(:each) do
     FileUtils.rm_r work_dir

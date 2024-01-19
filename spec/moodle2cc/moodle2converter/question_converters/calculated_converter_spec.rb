@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe CalculatedConverter do
 
     it 'converts calculated questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('calculated')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('calculated')
 
       moodle_question.id = 'something'
-      answer = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      answer = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       answer.id = 'blah'
       moodle_question.answers = [answer]
       moodle_question.dataset_definitions = ['mock datasets']

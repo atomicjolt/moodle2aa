@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Parsers
+module Moodle2AA::Moodle2::Parsers
   describe AnswerParser do
 
     it 'Parses Answers' do

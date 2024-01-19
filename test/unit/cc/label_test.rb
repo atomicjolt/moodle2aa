@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCCLabel < MiniTest::Test
   include TestHelper
@@ -17,13 +17,13 @@ class TestUnitCCLabel < MiniTest::Test
 
   def test_it_converts_id
     @mod.id = 654
-    label = Moodle2CC::CC::Label.new @mod
+    label = Moodle2AA::CC::Label.new @mod
     assert_equal 654, label.id
   end
 
   def test_it_converts_title
     @mod.name = 'Section 1'
-    label = Moodle2CC::CC::Label.new @mod
+    label = Moodle2AA::CC::Label.new @mod
     assert_equal 'Section 1', label.title
   end
 end

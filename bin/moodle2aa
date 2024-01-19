@@ -1,0 +1,9 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'moodle2aa'
+require 'moodle2aa/cli'
+
+require 'pp'
+require 'pry'
+
+Moodle2AA::CLI.start

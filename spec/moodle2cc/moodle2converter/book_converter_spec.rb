@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::BookConverter do
     let(:moodle2_book) {
       Moodle2::Models::Book.new.tap do |moodle2_book|

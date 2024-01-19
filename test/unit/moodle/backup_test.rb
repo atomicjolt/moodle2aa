@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitMoodleBackup < MiniTest::Test
   include TestHelper
@@ -14,17 +14,17 @@ class TestUnitMoodleBackup < MiniTest::Test
   end
 
   def test_it_has_info
-    backup = Moodle2CC::Moodle::Backup.read @moodle_backup_path
-    assert_instance_of Moodle2CC::Moodle::Info, backup.info
+    backup = Moodle2AA::Moodle::Backup.read @moodle_backup_path
+    assert_instance_of Moodle2AA::Moodle::Info, backup.info
   end
 
   def test_it_has_a_course
-    backup = Moodle2CC::Moodle::Backup.read @moodle_backup_path
-    assert_instance_of Moodle2CC::Moodle::Course, backup.course
+    backup = Moodle2AA::Moodle::Backup.read @moodle_backup_path
+    assert_instance_of Moodle2AA::Moodle::Course, backup.course
   end
 
   def test_it_has_files
-    backup = Moodle2CC::Moodle::Backup.read @moodle_backup_path
+    backup = Moodle2AA::Moodle::Backup.read @moodle_backup_path
     assert_equal ["folder/test.txt", "test.txt"], backup.files
   end
 end

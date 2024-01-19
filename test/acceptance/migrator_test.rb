@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestAcceptanceMigrator < MiniTest::Test
   include TestHelper
@@ -16,7 +16,7 @@ class TestAcceptanceMigrator < MiniTest::Test
   end
 
   def test_it_creates_a_cc_package
-    migrator = Moodle2CC::Migrator.new @source, @destination
+    migrator = Moodle2AA::Migrator.new @source, @destination
     migrator.migrate
     assert File.exists?(@package), "#{@package} not created"
   end

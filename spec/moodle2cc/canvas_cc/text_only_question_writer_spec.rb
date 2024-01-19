@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe TextOnlyQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('text_only_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('text_only_question')}
 
     it 'creates the question item xml for a true_false_question' do
       question.identifier = 300

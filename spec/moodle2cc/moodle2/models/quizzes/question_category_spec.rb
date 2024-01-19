@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Models::Quizzes
+module Moodle2AA::Moodle2::Models::Quizzes
   describe QuestionCategory do
 
     it_behaves_like 'it has an attribute for', :id
@@ -16,10 +16,10 @@ module Moodle2CC::Moodle2::Models::Quizzes
     it_behaves_like 'it has an attribute for', :questions, []
 
     it 'should pass resolve_embedded_question_references to multianswer questions' do
-      question = Moodle2CC::Moodle2::Models::Quizzes::MultianswerQuestion.new
+      question = Moodle2AA::Moodle2::Models::Quizzes::MultianswerQuestion.new
       allow(question).to receive(:resolve_embedded_question_references)
 
-      category = Moodle2CC::Moodle2::Models::Quizzes::QuestionCategory.new
+      category = Moodle2AA::Moodle2::Models::Quizzes::QuestionCategory.new
       category.questions = [question]
 
       category.resolve_embedded_question_references([])

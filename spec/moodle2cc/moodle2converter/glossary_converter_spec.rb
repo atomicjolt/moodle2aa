@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::GlossaryConverter do
     let(:moodle2_course) { Moodle2::Models::Course.new }
     subject { Moodle2Converter::GlossaryConverter.new(moodle2_course) }

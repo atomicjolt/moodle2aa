@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Parsers::QuestionParsers
+module Moodle2AA::Moodle2::Parsers::QuestionParsers
   describe QuestionParser do
 
     class FooBarParser < QuestionParser
@@ -46,7 +46,7 @@ module Moodle2CC::Moodle2::Parsers::QuestionParsers
       node = xml.at_xpath('/question_categories/question_category[@id = "2"]/questions/question[@id = "10"]')
       question = subject.parse_question(node)
 
-      expect(question.is_a?(Moodle2CC::Moodle2::Models::Quizzes::Question)).to be_truthy
+      expect(question.is_a?(Moodle2AA::Moodle2::Models::Quizzes::Question)).to be_truthy
       expect(question.type).to eq 'essay'
     end
 
@@ -55,7 +55,7 @@ module Moodle2CC::Moodle2::Parsers::QuestionParsers
       node = xml.at_xpath('/question_categories/question_category[@id = "2"]/questions/question[@id = "18"]')
       question = subject.parse_question(node)
 
-      expect(question.is_a?(Moodle2CC::Moodle2::Models::Quizzes::Question)).to be_truthy
+      expect(question.is_a?(Moodle2AA::Moodle2::Models::Quizzes::Question)).to be_truthy
       expect(question.type).to eq 'description'
     end
   end

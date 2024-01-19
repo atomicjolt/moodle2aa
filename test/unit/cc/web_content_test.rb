@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCCWebContent < MiniTest::Test
   include TestHelper
@@ -18,33 +18,33 @@ class TestUnitCCWebContent < MiniTest::Test
   def test_it_converts_id
     @mod.id = 543
 
-    web_content = Moodle2CC::CC::WebContent.new @mod
+    web_content = Moodle2AA::CC::WebContent.new @mod
     assert_equal 543, web_content.id
   end
 
   def test_it_converts_title
     @mod.name = "Instructor Resources"
 
-    web_content = Moodle2CC::CC::WebContent.new @mod
+    web_content = Moodle2AA::CC::WebContent.new @mod
     assert_equal "Instructor Resources", web_content.title
   end
 
   def test_it_converts_body
     @mod.alltext = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
 
-    web_content = Moodle2CC::CC::WebContent.new @mod
+    web_content = Moodle2AA::CC::WebContent.new @mod
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), web_content.body
   end
 
   def test_it_has_an_identifier
     @mod.id = 543
 
-    web_content = Moodle2CC::CC::WebContent.new @mod
+    web_content = Moodle2AA::CC::WebContent.new @mod
     assert_equal 'i6447ff05ab6e342a42302007a6e3bcb4', web_content.identifier
   end
 
   def test_it_creates_resource_in_imsmanifest
-    web_content = Moodle2CC::CC::WebContent.new @mod
+    web_content = Moodle2AA::CC::WebContent.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(web_content.create_resource_node(node))
 
@@ -52,9 +52,9 @@ class TestUnitCCWebContent < MiniTest::Test
     assert resource
     assert_equal 'webcontent', resource.attributes['type'].value
     assert_equal 'i6447ff05ab6e342a42302007a6e3bcb4', resource.attributes['identifier'].value
-    assert_equal Moodle2CC::CC::CCHelper::CC_WIKI_FOLDER + '/instructor-resources.html', resource.attributes['href'].value
+    assert_equal Moodle2AA::CC::CCHelper::CC_WIKI_FOLDER + '/instructor-resources.html', resource.attributes['href'].value
 
-    file = resource.xpath(%{file[@href="#{Moodle2CC::CC::CCHelper::CC_WIKI_FOLDER}/instructor-resources.html"]}).first
+    file = resource.xpath(%{file[@href="#{Moodle2AA::CC::CCHelper::CC_WIKI_FOLDER}/instructor-resources.html"]}).first
     assert file
   end
 
@@ -64,9 +64,9 @@ class TestUnitCCWebContent < MiniTest::Test
     @mod.alltext = "<p><strong>Instructor Resources</strong></p>"
 
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
-    web_content = Moodle2CC::CC::WebContent.new @mod
+    web_content = Moodle2AA::CC::WebContent.new @mod
     web_content.create_html(tmp_dir)
-    html = Nokogiri::HTML(File.read(File.join(tmp_dir, Moodle2CC::CC::CCHelper::CC_WIKI_FOLDER, 'instructor-resources.html')))
+    html = Nokogiri::HTML(File.read(File.join(tmp_dir, Moodle2AA::CC::CCHelper::CC_WIKI_FOLDER, 'instructor-resources.html')))
 
     assert html
     assert_equal 'i6447ff05ab6e342a42302007a6e3bcb4', html.search('head meta[name="identifier"]').first.attributes['content'].value

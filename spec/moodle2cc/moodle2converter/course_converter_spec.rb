@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::CourseConverter do
 
     it 'should convert a moodle course to a canvas course' do

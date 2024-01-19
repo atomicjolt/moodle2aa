@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Moodle2CC::Moodle2::Parsers::WikiParser do
-  subject(:parser) {Moodle2CC::Moodle2::Parsers::WikiParser.new(fixture_path(File.join('moodle2', 'backup')))}
+describe Moodle2AA::Moodle2::Parsers::WikiParser do
+  subject(:parser) {Moodle2AA::Moodle2::Parsers::WikiParser.new(fixture_path(File.join('moodle2', 'backup')))}
 
   it 'parses a moodle2 wiki' do
     wikis = parser.parse

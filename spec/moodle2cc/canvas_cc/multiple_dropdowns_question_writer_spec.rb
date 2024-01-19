@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe MultipleDropdownsQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('multiple_dropdowns_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('multiple_dropdowns_question')}
 
     it 'creates the question item xml for a multiple_dropdowns_question' do
       question.identifier = 4200

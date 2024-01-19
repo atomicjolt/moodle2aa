@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2
+module Moodle2AA::Moodle2
   describe Extractor do
     subject(:extractor) { Extractor.new('path_to_zip') }
     let(:course) { Models::Course.new }

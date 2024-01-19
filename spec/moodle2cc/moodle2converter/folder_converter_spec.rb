@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::FolderConverter do
 
     let(:moodle2_folder) { Moodle2::Models::Folder.new }

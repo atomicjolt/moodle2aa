@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasDiscussionTopic < MiniTest::Test
   include TestHelper
@@ -18,29 +18,29 @@ class TestUnitCanvasDiscussionTopic < MiniTest::Test
   def test_it_converts_posted_at
     @mod.section_mod.added = 1340731824
 
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     assert_equal '2012-06-26T17:30:24', discussion_topic.posted_at
   end
 
   def test_it_converts_position
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod, 5
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod, 5
     assert_equal 5, discussion_topic.position
   end
 
   def test_it_converts_type
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     assert_equal 'topic', discussion_topic.type
   end
 
   def test_it_has_an_identifierref
     @mod.id = 123
 
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     assert_equal 'ic2f863a4aeaa551a04dfbea65d6e72bb', discussion_topic.identifierref
   end
 
   def test_it_creates_resource_in_imsmanifest
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     node = Builder::XmlMarkup.new
     xml = node.root do |root_node|
       discussion_topic.create_resource_node(node)
@@ -72,7 +72,7 @@ class TestUnitCanvasDiscussionTopic < MiniTest::Test
   end
 
   def test_it_creates_item_in_module_meta
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(discussion_topic.create_module_meta_item_node(node, 5))
 
@@ -91,7 +91,7 @@ class TestUnitCanvasDiscussionTopic < MiniTest::Test
     @mod.intro = "<h1>Hello World</h1>"
 
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     discussion_topic.create_topic_xml(tmp_dir)
     xml = Nokogiri::XML(File.read(File.join(tmp_dir, "#{discussion_topic.identifier}.xml")))
 
@@ -110,7 +110,7 @@ class TestUnitCanvasDiscussionTopic < MiniTest::Test
     @mod.section_mod.added = 1340731824
 
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
-    discussion_topic = Moodle2CC::Canvas::DiscussionTopic.new @mod
+    discussion_topic = Moodle2AA::Canvas::DiscussionTopic.new @mod
     discussion_topic.create_topic_meta_xml(tmp_dir)
     xml = Nokogiri::XML(File.read(File.join(tmp_dir, "#{discussion_topic.identifierref}.xml")))
 

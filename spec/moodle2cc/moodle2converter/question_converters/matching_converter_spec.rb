@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe MatchingConverter do
 
     it 'converts matching questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('match')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('match')
       moodle_question.id = 'something'
 
       moodle_question.matches = [{
@@ -22,7 +22,7 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
     end
 
     it 'converts markdown to HTML' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('match')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('match')
       moodle_question.id = 'something'
 
       moodle_question.matches = [{

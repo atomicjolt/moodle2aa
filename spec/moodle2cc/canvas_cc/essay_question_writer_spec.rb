@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe EssayQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('essay_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('essay_question')}
 
     it 'creates the question item xml for an essay_question' do
       question.identifier = 42

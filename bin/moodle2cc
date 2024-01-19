@@ -1,9 +1,0 @@
-#!/usr/bin/env ruby
-require 'rubygems'
-require 'moodle2cc'
-require 'moodle2cc/cli'
-
-require 'pp'
-require 'pry'
-
-Moodle2CC::CLI.start

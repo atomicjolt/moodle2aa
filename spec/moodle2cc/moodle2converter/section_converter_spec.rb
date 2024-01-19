@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::SectionConverter do
     let(:moodle_section) { Moodle2::Models::Section.new }
 

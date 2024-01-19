@@ -1,13 +1,13 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitMoodleQuestion < MiniTest::Test
   include TestHelper
 
   def setup
     @moodle_backup_path = create_moodle_backup_zip
-    @backup = Moodle2CC::Moodle::Backup.read @moodle_backup_path
+    @backup = Moodle2AA::Moodle::Backup.read @moodle_backup_path
     @course = @backup.course
     @questionnaire_mod = @course.mods.find { |mod| mod.mod_type == 'questionnaire' }
     @question_category = @course.question_categories.first

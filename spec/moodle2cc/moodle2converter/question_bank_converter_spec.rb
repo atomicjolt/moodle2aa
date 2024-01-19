@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Moodle2CC::Moodle2Converter::QuestionBankConverter do
-  let(:moodle_category) {Moodle2CC::Moodle2::Models::Quizzes::QuestionCategory.new}
+describe Moodle2AA::Moodle2Converter::QuestionBankConverter do
+  let(:moodle_category) {Moodle2AA::Moodle2::Models::Quizzes::QuestionCategory.new}
 
   it 'converts a moodle2 question category to a canvas question bank' do
     moodle_category.id = 'category id'
@@ -14,7 +14,7 @@ describe Moodle2CC::Moodle2Converter::QuestionBankConverter do
   end
 
   it 'converts moodle2 questions using the correct question converters' do
-    moodle_category.questions = [Moodle2CC::Moodle2::Models::Quizzes::Question.create('truefalse')]
+    moodle_category.questions = [Moodle2AA::Moodle2::Models::Quizzes::Question.create('truefalse')]
 
     canvas_bank = subject.convert(moodle_category)
 
@@ -23,12 +23,12 @@ describe Moodle2CC::Moodle2Converter::QuestionBankConverter do
   end
 
   it 'converts random short answer questions into groups of short answer questions' do
-    question1 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('shortanswer')
-    question2 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('shortanswer')
+    question1 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('shortanswer')
+    question2 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('shortanswer')
     question1.id = 'blah'
     question2.id = 'bloo'
-    question3 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('truefalse')
-    question4 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('randomsamatch')
+    question3 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('truefalse')
+    question4 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('randomsamatch')
     moodle_category.questions = [question1, question2, question3, question4]
 
     canvas_bank = subject.convert(moodle_category)
@@ -43,12 +43,12 @@ describe Moodle2CC::Moodle2Converter::QuestionBankConverter do
   end
 
   it 'retains references to random questions but does not convert them' do
-    question1 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('random')
-    question2 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('random')
+    question1 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('random')
+    question2 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('random')
     question1.id = 'blah'
     question2.id = 'bloo'
-    question3 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('truefalse')
-    question4 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('truefalse')
+    question3 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('truefalse')
+    question4 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('truefalse')
     moodle_category.questions = [question1, question2, question3, question4]
 
     canvas_bank = subject.convert(moodle_category)

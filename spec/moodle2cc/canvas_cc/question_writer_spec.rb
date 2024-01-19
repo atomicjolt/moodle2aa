@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe QuestionWriter do
-    subject { Moodle2CC::CanvasCC::QuestionWriter }
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.new }
+    subject { Moodle2AA::CanvasCC::QuestionWriter }
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.new }
 
     class FooBarWriter < QuestionWriter
       def self.write_additional_nodes(item_node, question)
@@ -104,7 +104,7 @@ module Moodle2CC::CanvasCC
     end
 
     it 'writes standard answer feedback if called' do
-      answer = Moodle2CC::CanvasCC::Models::Answer.new
+      answer = Moodle2AA::CanvasCC::Models::Answer.new
       answer.id = 'an_id'
       answer.feedback = 'much feedback'
       question.answers = [answer]

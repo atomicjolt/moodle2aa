@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasCourse < MiniTest::Test
   include TestHelper
@@ -9,7 +9,7 @@ class TestUnitCanvasCourse < MiniTest::Test
   def setup
     convert_moodle_backup('canvas')
     @course = @backup.course
-    @cc_course = Moodle2CC::Canvas::Course.new @course
+    @cc_course = Moodle2AA::Canvas::Course.new @course
   end
 
   def teardown
@@ -17,7 +17,7 @@ class TestUnitCanvasCourse < MiniTest::Test
   end
 
   def test_it_inherits_from_cc
-    assert Moodle2CC::Canvas::Course.ancestors.include?(Moodle2CC::CC::Course), 'does not inherit from base CC class'
+    assert Moodle2AA::Canvas::Course.ancestors.include?(Moodle2AA::CC::Course), 'does not inherit from base CC class'
   end
 
   def test_it_converts_id
@@ -41,10 +41,10 @@ class TestUnitCanvasCourse < MiniTest::Test
   end
 
   def test_it_converts_syllabus_body
-    section = Moodle2CC::Moodle::Section.new
+    section = Moodle2AA::Moodle::Section.new
     section.summary = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
     @course.sections = [section]
-    cc_course = Moodle2CC::Canvas::Course.new @course
+    cc_course = Moodle2AA::Canvas::Course.new @course
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), cc_course.syllabus_body
   end
 
