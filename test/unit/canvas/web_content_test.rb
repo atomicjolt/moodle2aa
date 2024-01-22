@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasWebContent < MiniTest::Test
   include TestHelper
@@ -16,11 +16,11 @@ class TestUnitCanvasWebContent < MiniTest::Test
   end
 
   def test_it_inherits_from_cc
-    assert Moodle2CC::Canvas::WebContent.ancestors.include?(Moodle2CC::CC::WebContent), 'does not inherit from base CC class'
+    assert Moodle2AA::Canvas::WebContent.ancestors.include?(Moodle2AA::CC::WebContent), 'does not inherit from base CC class'
   end
 
   def test_it_creates_item_in_module_meta
-    web_content = Moodle2CC::Canvas::WebContent.new @mod
+    web_content = Moodle2AA::Canvas::WebContent.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(web_content.create_module_meta_item_node(node, 5))
 
@@ -38,7 +38,7 @@ class TestUnitCanvasWebContent < MiniTest::Test
     mod = @backup.course.mods.find { |m| m.mod_type == "resource" &&
         (!m.summary.nil? && m.summary.length != 0)}
     mod.type = 'file'
-    web_content = Moodle2CC::Canvas::WebContent.new mod
+    web_content = Moodle2AA::Canvas::WebContent.new mod
 
     assert web_content.body.include?(mod.reference)
     assert web_content.body.include?(mod.summary)

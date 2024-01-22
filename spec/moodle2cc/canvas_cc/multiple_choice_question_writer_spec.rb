@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe MultipleChoiceQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('multiple_choice_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('multiple_choice_question')}
 
     it 'creates the question item xml for a multiple_choice_question' do
       question.identifier = 420
@@ -11,12 +11,12 @@ module Moodle2CC::CanvasCC
       question.general_feedback = 'feedbacks'
       question.material = 'materiaru'
 
-      answer1 = Moodle2CC::CanvasCC::Models::Answer.new
+      answer1 = Moodle2AA::CanvasCC::Models::Answer.new
       answer1.id = 'correcto'
       answer1.fraction = 1.0
       answer1.answer_text = 'so true'
       answer1.feedback = 'was there ever any doubt?'
-      answer2 = Moodle2CC::CanvasCC::Models::Answer.new
+      answer2 = Moodle2AA::CanvasCC::Models::Answer.new
       answer2.id = 'farusu'
       answer2.fraction = 0.0
       answer2.answer_text = 'falrse'

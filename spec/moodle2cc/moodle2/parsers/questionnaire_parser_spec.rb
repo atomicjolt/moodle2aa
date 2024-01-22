@@ -1,7 +1,7 @@
 require 'spec_helper'
 
-describe Moodle2CC::Moodle2::Parsers::QuestionnaireParser do
-  subject { Moodle2CC::Moodle2::Parsers::QuestionnaireParser.new(fixture_path(File.join('moodle2', 'backup'))) }
+describe Moodle2AA::Moodle2::Parsers::QuestionnaireParser do
+  subject { Moodle2AA::Moodle2::Parsers::QuestionnaireParser.new(fixture_path(File.join('moodle2', 'backup'))) }
 
   it 'should parse a questionnaire activity' do
     questionnaires = subject.parse

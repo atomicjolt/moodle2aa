@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasAssessment < MiniTest::Test
   include TestHelper
@@ -8,7 +8,7 @@ class TestUnitCanvasAssessment < MiniTest::Test
   def setup
     convert_moodle_backup('canvas')
     @mod = @backup.course.mods.find { |m| m.mod_type == "quiz" }
-    @assessment = Moodle2CC::Canvas::Assessment.new @mod
+    @assessment = Moodle2AA::Canvas::Assessment.new @mod
   end
 
   def teardown
@@ -16,19 +16,19 @@ class TestUnitCanvasAssessment < MiniTest::Test
   end
 
   def test_it_inherits_from_cc
-    assert Moodle2CC::Canvas::Assessment.ancestors.include?(Moodle2CC::CC::Assessment), 'does not inherit from base CC class'
+    assert Moodle2AA::Canvas::Assessment.ancestors.include?(Moodle2AA::CC::Assessment), 'does not inherit from base CC class'
   end
 
   def test_it_converts_description_from_intro
     @mod.intro = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), assessment.description
   end
 
   def test_it_converts_description_from_content
     @mod.intro = nil
     @mod.content = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), assessment.description
   end
 
@@ -36,7 +36,7 @@ class TestUnitCanvasAssessment < MiniTest::Test
     @mod.intro = nil
     @mod.content = nil
     @mod.text = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), assessment.description
   end
 
@@ -45,104 +45,104 @@ class TestUnitCanvasAssessment < MiniTest::Test
     @mod.content = nil
     @mod.text = nil
     @mod.summary = %(<h1>Hello World</h1><img src="$@FILEPHP@$$@SLASH@$folder$@SLASH@$stuff.jpg" />)
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal %(<h1>Hello World</h1><img src="$IMS_CC_FILEBASE$/folder/stuff.jpg" />), assessment.description
   end
 
   def test_it_converts_lock_at
     @mod.time_close = Time.parse("2012/12/12 12:12:12 +0000").to_i
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal '2012-12-12T12:12:12', assessment.lock_at
   end
 
   def test_it_converts_unlock_at
     @mod.time_open = Time.parse("2012/12/12 12:12:12 +0000").to_i
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal '2012-12-12T12:12:12', assessment.unlock_at
   end
 
   def test_it_converts_time_limit
     @mod.time_limit = 45
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 45, assessment.time_limit
   end
 
   def test_it_converts_allowed_attempts
     @mod.attempts_number = 2
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 2, assessment.allowed_attempts
   end
 
   def test_it_converts_scoring_policy
     @mod.grade_method = 1
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 'keep_highest', assessment.scoring_policy
 
     @mod.grade_method = 2
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 'keep_highest', assessment.scoring_policy
 
     @mod.grade_method = 3
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 'keep_highest', assessment.scoring_policy
 
     @mod.grade_method = 4
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 'keep_latest', assessment.scoring_policy
   end
 
   def test_it_converts_access_code
     @mod.password = 'password'
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 'password', assessment.access_code
   end
 
   def test_it_converts_ip_filter
     @mod.subnet = '127.0.0.1'
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal '127.0.0.1', assessment.ip_filter
   end
 
   def test_it_converts_shuffle_answers
     @mod.shuffle_answers = true
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal true, assessment.shuffle_answers
   end
 
   def test_it_converts_quiz_type
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert assessment.quiz_type != 'survey'
 
     questionnaire_mod = @backup.course.mods.find { |mod| mod.mod_type == 'questionnaire' }
-    assessment = Moodle2CC::Canvas::Assessment.new questionnaire_mod
+    assessment = Moodle2AA::Canvas::Assessment.new questionnaire_mod
     assert_equal 'survey', assessment.quiz_type
 
     choice_mod = @backup.course.mods.find { |mod| mod.mod_type == 'choice' }
-    assessment = Moodle2CC::Canvas::Assessment.new choice_mod
+    assessment = Moodle2AA::Canvas::Assessment.new choice_mod
     assert_equal 'survey', assessment.quiz_type
   end
 
   def test_it_converts_questions
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 5, assessment.questions.length
-    assert_kind_of Moodle2CC::Canvas::Question, assessment.questions[0]
-    assert_kind_of Moodle2CC::Canvas::Question, assessment.questions[1]
-    assert_kind_of Moodle2CC::Canvas::Question, assessment.questions[2]
-    assert_kind_of Moodle2CC::Canvas::Question, assessment.questions[3]
-    assert_kind_of Moodle2CC::Canvas::Question, assessment.questions[4]
+    assert_kind_of Moodle2AA::Canvas::Question, assessment.questions[0]
+    assert_kind_of Moodle2AA::Canvas::Question, assessment.questions[1]
+    assert_kind_of Moodle2AA::Canvas::Question, assessment.questions[2]
+    assert_kind_of Moodle2AA::Canvas::Question, assessment.questions[3]
+    assert_kind_of Moodle2AA::Canvas::Question, assessment.questions[4]
   end
 
   def test_it_converts_question_groups
     convert_moodle_backup('canvas', 'moodle_backup_random_questions')
     mod = @backup.course.mods.find { |m| m.mod_type == "quiz" }
-    assessment = Moodle2CC::Canvas::Assessment.new mod
+    assessment = Moodle2AA::Canvas::Assessment.new mod
 
     assert_equal 5, assessment.questions.length
-    assert_kind_of Moodle2CC::Canvas::QuestionGroup, assessment.questions[0]
-    assert_kind_of Moodle2CC::Canvas::QuestionGroup, assessment.questions[1]
-    assert_kind_of Moodle2CC::Canvas::Question, assessment.questions[2]
-    assert_kind_of Moodle2CC::Canvas::QuestionGroup, assessment.questions[3]
-    assert_kind_of Moodle2CC::Canvas::QuestionGroup, assessment.questions[4]
+    assert_kind_of Moodle2AA::Canvas::QuestionGroup, assessment.questions[0]
+    assert_kind_of Moodle2AA::Canvas::QuestionGroup, assessment.questions[1]
+    assert_kind_of Moodle2AA::Canvas::Question, assessment.questions[2]
+    assert_kind_of Moodle2AA::Canvas::QuestionGroup, assessment.questions[3]
+    assert_kind_of Moodle2AA::Canvas::QuestionGroup, assessment.questions[4]
 
     assert_equal 1, assessment.questions[0].id
     assert_equal 'Group 1', assessment.questions[0].title
@@ -167,7 +167,7 @@ class TestUnitCanvasAssessment < MiniTest::Test
 
   def test_it_has_a_non_cc_assessments_identifier
     @mod.id = 321
-    assessment = Moodle2CC::Canvas::Assessment.new @mod
+    assessment = Moodle2AA::Canvas::Assessment.new @mod
     assert_equal 'ibe158496fef4c2255274cdf9113e1daf', assessment.non_cc_assessments_identifier
   end
 

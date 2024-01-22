@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasQuestionBank < MiniTest::Test
   include TestHelper
@@ -18,44 +18,44 @@ class TestUnitCanvasQuestionBank < MiniTest::Test
 
   def test_it_converts_id
     @question_category.id = 121
-    question_bank = Moodle2CC::Canvas::QuestionBank.new @question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new @question_category
     assert_equal 121, question_bank.id
   end
 
   def test_it_converts_title
     @question_category.name = 'Default for Beginning Ruby on Rails'
-    question_bank = Moodle2CC::Canvas::QuestionBank.new @question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new @question_category
     assert_equal 'Default for Beginning Ruby on Rails', question_bank.title
   end
 
   def test_it_converts_questions
-    question_bank = Moodle2CC::Canvas::QuestionBank.new @question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new @question_category
     assert_equal 5, question_bank.questions.length
-    assert_kind_of Moodle2CC::Canvas::Question, question_bank.questions[0]
-    assert_kind_of Moodle2CC::Canvas::Question, question_bank.questions[1]
-    assert_kind_of Moodle2CC::Canvas::Question, question_bank.questions[2]
-    assert_kind_of Moodle2CC::Canvas::Question, question_bank.questions[3]
-    assert_kind_of Moodle2CC::Canvas::Question, question_bank.questions[4]
+    assert_kind_of Moodle2AA::Canvas::Question, question_bank.questions[0]
+    assert_kind_of Moodle2AA::Canvas::Question, question_bank.questions[1]
+    assert_kind_of Moodle2AA::Canvas::Question, question_bank.questions[2]
+    assert_kind_of Moodle2AA::Canvas::Question, question_bank.questions[3]
+    assert_kind_of Moodle2AA::Canvas::Question, question_bank.questions[4]
   end
 
   def test_it_does_not_convert_random_questions
     convert_moodle_backup('canvas', 'moodle_backup_random_questions')
     mod = @backup.course.mods.find { |m| m.mod_type == "quiz" }
     question_category = @backup.course.question_categories.first
-    question_bank = Moodle2CC::Canvas::QuestionBank.new question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new question_category
 
     assert_equal 2, question_bank.questions.length
   end
 
   def test_it_has_an_identifier
     @question_category.id = 121
-    question_bank = Moodle2CC::Canvas::QuestionBank.new @question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new @question_category
     # objectbank_{id}
     assert_equal 'i02849cd800255cc6c762cdafd8d8db67', question_bank.identifier
   end
 
   def test_it_creates_resource_in_imsmanifest
-    question_bank = Moodle2CC::Canvas::QuestionBank.new @question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new @question_category
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question_bank.create_resource_node(node))
 
@@ -70,7 +70,7 @@ class TestUnitCanvasQuestionBank < MiniTest::Test
   end
 
   def test_it_creates_qti_xml
-    question_bank = Moodle2CC::Canvas::QuestionBank.new @question_category
+    question_bank = Moodle2AA::Canvas::QuestionBank.new @question_category
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
     question_bank.create_qti_xml(tmp_dir)
     xml = Nokogiri::XML(File.read(File.join(tmp_dir, 'non_cc_assessments', "i02849cd800255cc6c762cdafd8d8db67.xml.qti")))

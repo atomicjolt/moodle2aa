@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe NumericalQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('numerical_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('numerical_question')}
 
     it 'creates the question item xml for a numerical question' do
       question.identifier = 9001
@@ -11,12 +11,12 @@ module Moodle2CC::CanvasCC
       question.general_feedback = 'ur totes awesome'
       question.material = 'this is a question, or is it?'
 
-      answer1 = Moodle2CC::CanvasCC::Models::Answer.new
+      answer1 = Moodle2AA::CanvasCC::Models::Answer.new
       answer1.id = 'answer1_id'
       answer1.answer_text = 20
       answer1.fraction = 1
       answer1.feedback = 'feedbak1'
-      answer2 = Moodle2CC::CanvasCC::Models::Answer.new
+      answer2 = Moodle2AA::CanvasCC::Models::Answer.new
       answer2.id = 'answer2_id'
       answer2.answer_text = 30
       answer2.fraction = 0

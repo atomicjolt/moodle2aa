@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasLabel < MiniTest::Test
   include TestHelper
@@ -16,7 +16,7 @@ class TestUnitCanvasLabel < MiniTest::Test
   end
 
   def test_it_creates_item_in_module_meta
-    label = Moodle2CC::Canvas::Label.new @mod
+    label = Moodle2AA::Canvas::Label.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(label.create_module_meta_item_node(node, 5))
 

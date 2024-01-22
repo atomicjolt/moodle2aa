@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe FileMetaWriter do
 
     let(:file) { Models::CanvasFile.new }

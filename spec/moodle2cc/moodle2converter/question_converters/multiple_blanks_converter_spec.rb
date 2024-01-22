@@ -1,23 +1,23 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe MultipleBlanksConverter do
 
     it 'converts multianswer questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('multianswer')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('multianswer')
       moodle_question.id = 'something'
       moodle_question.question_text = 'the first question is: {#1} and the second is: {#2}'
 
-      embedded_question1 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('multichoice')
-      answer1 = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      embedded_question1 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('multichoice')
+      answer1 = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       answer1.id = '1'
       answer1.fraction = 1
-      ignored_answer = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      ignored_answer = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       ignored_answer.fraction = 0
       embedded_question1.answers = [answer1, ignored_answer]
 
-      embedded_question2 = Moodle2CC::Moodle2::Models::Quizzes::Question.create('multichoice')
-      answer2 = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      embedded_question2 = Moodle2AA::Moodle2::Models::Quizzes::Question.create('multichoice')
+      answer2 = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       answer2.id = '2'
       answer2.fraction = 1
       embedded_question2.answers = [answer2]

@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe MatchingQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('matching_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('matching_question')}
 
     it 'creates the question item xml for a matching question' do
       question.identifier = 9001

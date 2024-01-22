@@ -2,7 +2,7 @@ require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
 require 'test_question_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasQuestion < MiniTest::Test
   include TestHelper
@@ -20,143 +20,143 @@ class TestUnitCanvasQuestion < MiniTest::Test
   end
 
   def test_it_inherits_from_cc
-    assert Moodle2CC::Canvas::Question.ancestors.include?(Moodle2CC::CC::Question), 'does not inherit from base CC class'
+    assert Moodle2AA::Canvas::Question.ancestors.include?(Moodle2AA::CC::Question), 'does not inherit from base CC class'
   end
 
   def test_it_converts_length
     @question.length = 5
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 5, question.length
   end
 
   def test_it_converts_question_type
     @question.type = 'calculated'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'calculated_question', question.question_type
 
     @question.type = 'description'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'text_only_question', question.question_type
 
     @question.type = 'essay'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'essay_question', question.question_type
 
     @question.type = 'match'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'matching_question', question.question_type
 
     @question.type = 'multianswer'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'embedded_answers_question', question.question_type
 
     @question.type = 'multichoice'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'multiple_choice_question', question.question_type
 
     @question.type = 'shortanswer'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'short_answer_question', question.question_type
 
     @question.type = 'numerical'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'numerical_question', question.question_type
 
     @question.type = 'truefalse'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'true_false_question', question.question_type
 
     @question.type = nil
 
     @question.type_id = 1
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'true_false_question', question.question_type
 
     @question.type_id = 2
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'essay_question', question.question_type
 
     @question.type_id = 3
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'essay_question', question.question_type
 
     @question.type_id = 4
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'multiple_choice_question', question.question_type
 
     @question.type_id = 5
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'multiple_answers_question', question.question_type
 
     @question.type_id = 6
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'multiple_choice_question', question.question_type
 
     @question.type_id = 8
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'multiple_dropdowns_question', question.question_type
 
     @question.type_id = 9
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'essay_question', question.question_type
 
     @question.type_id = 10
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'numerical_question', question.question_type
 
     @question.type_id = 100
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'text_only_question', question.question_type
   end
 
   def test_it_converts_points_possible
     @question.grade = 5
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 5, question.points_possible
   end
 
   def test_it_converts_material
     @question.text = "How much is {a} + {b} ?"
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal "How much is [a] + [b] ?", question.material
   end
 
   def test_it_adds_image_tag_to_material
     @question.text = "How much is {a} + {b} ?"
     @question.image = "test.jpg"
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal %{How much is [a] + [b] ?<p><img src="$IMS_CC_FILEBASE$/test.jpg" alt="test.jpg"/></p>}, question.material
   end
 
   def test_it_converts_markdown_text_to_html_material
     @question.text = "This is **bold** and this is _italic_"
     @question.format = 4 # markdown
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal "<p>This is <strong>bold</strong> and this is <em>italic</em></p>\n", question.material
   end
 
   def test_it_converts_material_for_multiple_dropdowns_question
     multiple_dropdowns_question!
     @question.content = "This is a rating question"
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal "This is a rating question\nI test my code [response1]\nI am happy [response2]", question.material
   end
 
   def test_it_converts_material_for_multiple_dropdowns_question_without_choices
     multiple_dropdowns_question_without_choices!
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal "This is a rating question but not formatted very well\nthis isn't actually a choice [response1]\nso add the choices automatically [response2]", question.material
   end
 
   def test_it_converts_general_feedback
     @question.general_feedback = "This should be easy"
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal "This should be easy", question.general_feedback
   end
 
   def test_it_converts_answer_tolerance
     @question.calculations.first.tolerance = 0.01
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 0.01, question.answer_tolerance
   end
 
@@ -165,12 +165,12 @@ class TestUnitCanvasQuestion < MiniTest::Test
     calculation.correct_answer_format = 1 # decimal
     calculation.correct_answer_length = 2
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 2, question.formula_decimal_places
 
     calculation.correct_answer_format = 2 # significant figures
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 0, question.formula_decimal_places
   end
 
@@ -182,7 +182,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
     answer1.text = '{a} + {b}'
     answer2.text = '{a} * {b}'
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 2, question.formulas.length
     assert_equal 'a+b', question.formulas.first
     assert_equal 'a*b', question.formulas.last
@@ -199,7 +199,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
     ds_def2.name = 'b'
     ds_def2.options = 'uniform:1.0:10.0:1'
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 2, question.vars.length
     assert_equal({:name => 'a', :scale => '3', :min => '3.0', :max => '9.0'}, question.vars.first)
     assert_equal({:name => 'b', :scale => '1', :min => '1.0', :max => '10.0'}, question.vars.last)
@@ -230,7 +230,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
     ds_item2.number = 2
     ds_item2.value = 1.0
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 2, question.var_sets.length
     assert_equal({:vars => {'a' => 3.0, 'b' => 6.0}, :answer => 9.0}, question.var_sets.first)
     assert_equal({:vars => {'a' => 5.5, 'b' => 1.0}, :answer => 6.5}, question.var_sets.last)
@@ -239,14 +239,14 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_converts_matches
     match_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 2, question.matches.length
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :question => 'Ruby on Rails is written in this language',
       :answers => {123 => 'Ruby', 234 => 'Python', 345 => 'CoffeeScript'},
       :answer => 123
     ), question.matches.first)
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :question => 'Files with .coffee extension use which language?',
       :answers => {123 => 'Ruby', 234 => 'Python', 345 => 'CoffeeScript'},
       :answer => 345
@@ -254,19 +254,19 @@ class TestUnitCanvasQuestion < MiniTest::Test
   end
 
   def test_it_converts_numericals
-    answer = Moodle2CC::Moodle::Question::Answer.new
+    answer = Moodle2AA::Moodle::Question::Answer.new
     answer.id = 43
     answer.text = "Blah"
-    numerical = Moodle2CC::Moodle::Question::Numerical.new
+    numerical = Moodle2AA::Moodle::Question::Numerical.new
     numerical.answer_id = 43
     numerical.tolerance = 3
     @question.numericals = [numerical]
     @question.answers = [answer]
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
 
     assert_equal 1, question.numericals.length
 
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :answer => question.answers.first,
       :tolerance => 3
     ), question.numericals.first)
@@ -275,28 +275,28 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_converts_answers
     multiple_choice_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 4, question.answers.length
 
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 123,
       :text => 'Ruby',
       :fraction => 1,
       :feedback => 'Yippee!'
     ), question.answers[0])
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 234,
       :text => 'CoffeeScript',
       :fraction => 0.75,
       :feedback => 'Nope'
     ), question.answers[1])
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 345,
       :text => 'Java',
       :fraction => 0.25,
       :feedback => 'No way'
     ), question.answers[2])
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 456,
       :text => 'Clojure',
       :fraction => 0,
@@ -308,41 +308,41 @@ class TestUnitCanvasQuestion < MiniTest::Test
     @question.type = nil
     @question.type_id = 4
 
-    choice1 = Moodle2CC::Moodle::Question::Choice.new
+    choice1 = Moodle2AA::Moodle::Question::Choice.new
     choice1.id = 123
     choice1.content = 'Ruby'
 
-    choice2 = Moodle2CC::Moodle::Question::Choice.new
+    choice2 = Moodle2AA::Moodle::Question::Choice.new
     choice2.id = 234
     choice2.content = 'CoffeeScript'
 
-    choice3 = Moodle2CC::Moodle::Question::Choice.new
+    choice3 = Moodle2AA::Moodle::Question::Choice.new
     choice3.id = 345
     choice3.content = 'Java'
 
-    choice4 = Moodle2CC::Moodle::Question::Choice.new
+    choice4 = Moodle2AA::Moodle::Question::Choice.new
     choice4.id = 456
     choice4.content = 'Clojure'
 
     @question.choices = [choice1, choice2, choice3, choice4]
     @question.answers = []
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 4, question.answers.length
 
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 123,
       :text => 'Ruby'
     ), question.answers[0])
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 234,
       :text => 'CoffeeScript'
     ), question.answers[1])
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 345,
       :text => 'Java'
     ), question.answers[2])
-    assert_equal(Moodle2CC::OpenStruct.new(
+    assert_equal(Moodle2AA::OpenStruct.new(
       :id => 456,
       :text => 'Clojure'
     ), question.answers[3])
@@ -351,14 +351,14 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_has_an_identifier_based_on_id
     @question.id = 989
     @question.instance_id = nil
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'i04823ed56ffd4fd5f9c21db0cf25be6c', question.identifier
     # question_989
   end
 
   def test_it_has_an_identifier_based_on_instance_id
     @question.instance_id = 787
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'i2edcb021d100c968ba3f570253a6aa1c', question.identifier
     # question_instance_787
   end
@@ -366,7 +366,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_has_an_assessment_question_identifierref_if_instance_id_exists
     @question.id = 989
     @question.instance_id = 787
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 'i04823ed56ffd4fd5f9c21db0cf25be6c', question.assessment_question_identifierref
     # question_989
   end
@@ -374,13 +374,13 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_does_not_have_an_assessment_question_identifierref_if_instance_id_does_not_exist
     @question.id = 989
     @question.instance_id = nil
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     refute question.assessment_question_identifierref
     # question_989
   end
 
   def test_it_creates_fractions
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     assert_equal 100, question.get_score(1)
     assert_equal 50, question.get_score(0.5)
     assert_equal 0, question.get_score(0)
@@ -389,14 +389,14 @@ class TestUnitCanvasQuestion < MiniTest::Test
 
   def test_it_create_multple_question_from_choice_mod
     @choice_mod = @backup.course.mods.find { |m| m.mod_type == 'choice' }
-    question = Moodle2CC::Canvas::Question.new @choice_mod.questions.first
+    question = Moodle2AA::Canvas::Question.new @choice_mod.questions.first
 
     assert_equal 'multiple_choice_question', question.question_type
   end
 
   def test_it_creates_item_xml
     @question.image = 'test.jpg'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -434,7 +434,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
 
   def test_it_creates_item_xml_for_calculated_question
     @question.type = 'calculated'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -501,7 +501,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
 
   def test_it_creates_item_xml_for_essay_question
     @question.type = 'essay'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -520,7 +520,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_matching_question
     match_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -558,7 +558,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_multiple_choice_question
     multiple_choice_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -633,7 +633,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_multiple_dropdowns_question
     multiple_dropdowns_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -671,7 +671,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_multiple_dropdowns_question_without_choices
     multiple_dropdowns_question_without_choices!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -709,7 +709,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_create_item_xml_for_multiple_answers_question
     multiple_answers_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -736,7 +736,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_numerical_question
     numerical_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -768,7 +768,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_short_answer_question
     short_answer_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -824,7 +824,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
   def test_it_creates_item_xml_for_true_false_question
     true_false_question!
 
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 
@@ -858,7 +858,7 @@ class TestUnitCanvasQuestion < MiniTest::Test
 
   def test_it_creates_item_xml_for_embedded_answers_question
     @question.type = 'multianswer'
-    question = Moodle2CC::Canvas::Question.new @question
+    question = Moodle2AA::Canvas::Question.new @question
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(question.create_item_xml(node))
 

@@ -1,17 +1,17 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe QuestionBankWriter do
-    subject { Moodle2CC::CanvasCC::QuestionBankWriter.new(work_dir, question_bank) }
+    subject { Moodle2AA::CanvasCC::QuestionBankWriter.new(work_dir, question_bank) }
     let(:work_dir) { Dir.mktmpdir }
-    let(:question_bank) { Moodle2CC::CanvasCC::Models::QuestionBank.new }
+    let(:question_bank) { Moodle2AA::CanvasCC::Models::QuestionBank.new }
 
     after(:each) do
       FileUtils.rm_r work_dir
     end
 
     it 'creates the question bank xml file' do
-      question = Moodle2CC::CanvasCC::Models::Question.new
+      question = Moodle2AA::CanvasCC::Models::Question.new
       question.identifier = 42
 
       QuestionWriter.register_writer_type(nil)

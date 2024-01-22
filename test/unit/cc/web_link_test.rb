@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCCWebLink < MiniTest::Test
   include TestHelper
@@ -18,88 +18,88 @@ class TestUnitCCWebLink < MiniTest::Test
   def test_it_converts_id
     @mod.id = 123
 
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal 123, web_link.id
   end
 
   def test_it_converts_title
     @mod.name = "About Your Instructor"
 
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal "About Your Instructor", web_link.title
   end
 
   def test_it_converts_url
     @mod.reference = "http://en.wikipedia.org/wiki/Einstein"
 
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal "http://en.wikipedia.org/wiki/Einstein", web_link.url
   end
 
   def test_it_strips_whitespace_from_url
     @mod.reference = " http://en.wikipedia.org/wiki/Einstein "
 
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal "http://en.wikipedia.org/wiki/Einstein", web_link.url
   end
 
   def test_it_converts_external_link
     @mod.reference = "http://en.wikipedia.org/wiki/Einstein"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal true, web_link.external_link
 
     @mod.reference = "files/myfile.txt"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal false, web_link.external_link
   end
 
   def test_it_converts_external_link_with_spaces_in_the_url
     @mod.reference = "http://en.wikipedia.org/wiki/Einstein with a Space"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal true, web_link.external_link
 
     @mod.reference = "files/my file.txt"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal false, web_link.external_link
   end
 
   def test_it_converts_external_link_with_completely_invalid_url
     @mod.reference = 'http://!@#$%^&*'
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal true, web_link.external_link
 
     @mod.reference = 'files/!@#$%^&*.txt'
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal false, web_link.external_link
   end
 
   def test_if_converts_href
     @mod.reference = "http://en.wikipedia.org/wiki/Einstein"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal "#{web_link.identifier}.xml", web_link.href
 
     @mod.reference = "files/myfile.txt"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal 'web_resources/files/myfile.txt', web_link.href
   end
 
   def test_it_has_an_identifier_for_external_link
     @mod.id = 123
 
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal 'iecc4b622fbc1adf8b8a2085e0974ac7d', web_link.identifier
   end
 
   def test_it_has_an_identifier_for_local_file
     @mod.reference = "files/myfile.txt"
 
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     assert_equal 'i5cfabae035bff8857137d83c2a067809', web_link.identifier
   end
 
   def test_it_creates_resource_in_imsmanifest_for_external_link
     @mod.reference = "http://en.wikipedia.org/wiki/Einstein"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(web_link.create_resource_node(node))
 
@@ -114,7 +114,7 @@ class TestUnitCCWebLink < MiniTest::Test
 
   def test_it_creates_resource_in_imsmanifest_for_local_file
     @mod.reference = "files/myfile.txt"
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(web_link.create_resource_node(node))
 
@@ -134,7 +134,7 @@ class TestUnitCCWebLink < MiniTest::Test
     @mod.reference = "http://en.wikipedia.org/wiki/Einstein"
 
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     web_link.create_xml(tmp_dir)
     xml = Nokogiri::XML(File.read(File.join(tmp_dir, "#{web_link.identifier}.xml")))
 
@@ -152,7 +152,7 @@ class TestUnitCCWebLink < MiniTest::Test
     @mod.reference = "files/myfile.txt"
 
     tmp_dir = File.expand_path('../../../tmp', __FILE__)
-    web_link = Moodle2CC::CC::WebLink.new @mod
+    web_link = Moodle2AA::CC::WebLink.new @mod
     web_link.create_xml(tmp_dir)
     refute File.exists?(File.join(tmp_dir, "#{web_link.identifier}.xml")), 'xml file was created for local file'
   end

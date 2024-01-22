@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter
+module Moodle2AA::Moodle2Converter
 describe PageConverter do
-  let(:moodle_page){Moodle2CC::Moodle2::Models::Page.new}
+  let(:moodle_page){Moodle2AA::Moodle2::Models::Page.new}
 
     it 'converts a moodle page to a canvas page' do
       moodle_page.id = 'page_id'

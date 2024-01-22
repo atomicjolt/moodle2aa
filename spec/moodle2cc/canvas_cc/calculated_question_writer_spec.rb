@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe CalculatedQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('calculated_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('calculated_question')}
 
     it 'creates the question item xml for a calculated question' do
       question.identifier = 42
@@ -15,7 +15,7 @@ module Moodle2CC::CanvasCC
       question.correct_answer_length = '2'
       question.tolerance = '0.01'
 
-      answer = Moodle2CC::CanvasCC::Models::Answer.new
+      answer = Moodle2AA::CanvasCC::Models::Answer.new
       answer.answer_text = '{A}*{B}'
       answer.fraction = 1
       question.answers = [answer]

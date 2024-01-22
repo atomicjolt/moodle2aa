@@ -1,15 +1,15 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::Migrator do
     subject(:migrator) { Moodle2Converter::Migrator.new('src_dir', 'out_dir') }
     let(:canvas_course) { CanvasCC::Models::Course.new }
 
-    let(:moodle_course) { Moodle2CC::Moodle2::Models::Course.new }
-    let(:canvas_page) { p = Moodle2CC::CanvasCC::Models::Page.new; p.title = "sometitle"; p }
-    let(:canvas_discussion) {Moodle2CC::CanvasCC::Models::Discussion.new}
-    let(:canvas_assignment) {Moodle2CC::CanvasCC::Models::Assignment.new}
-    let(:canvas_assessment) {Moodle2CC::CanvasCC::Models::Assessment.new}
+    let(:moodle_course) { Moodle2AA::Moodle2::Models::Course.new }
+    let(:canvas_page) { p = Moodle2AA::CanvasCC::Models::Page.new; p.title = "sometitle"; p }
+    let(:canvas_discussion) {Moodle2AA::CanvasCC::Models::Discussion.new}
+    let(:canvas_assignment) {Moodle2AA::CanvasCC::Models::Assignment.new}
+    let(:canvas_assessment) {Moodle2AA::CanvasCC::Models::Assessment.new}
 
     before(:each) do
       extractor = double('extractor', extract: nil)
@@ -26,7 +26,7 @@ module Moodle2CC
       allow_any_instance_of(Moodle2Converter::AssignmentConverter).to receive(:convert)
       allow_any_instance_of(Moodle2Converter::FolderConverter).to receive(:convert)
       allow_any_instance_of(Moodle2Converter::BookConverter).to receive(:convert_to_pages)
-      allow_any_instance_of(Moodle2CC::CanvasCC::Models::Assessment).to receive(:resolve_question_references!)
+      allow_any_instance_of(Moodle2AA::CanvasCC::Models::Assessment).to receive(:resolve_question_references!)
       allow(Moodle2Converter::HtmlConverter).to receive(:new) { double('html_converter', convert: true) }
       allow_any_instance_of(Moodle2Converter::GlossaryConverter).to receive(:convert)
       allow(CanvasCC::CartridgeCreator).to receive(:new).and_return(double(create: nil))
@@ -77,21 +77,21 @@ module Moodle2CC
 
       it 'converts assignments' do
         moodle_course.assignments = [:assign1, :assign2]
-        allow_any_instance_of(Moodle2CC::Moodle2Converter::AssignmentConverter).to receive(:convert).and_return(canvas_assignment)
+        allow_any_instance_of(Moodle2AA::Moodle2Converter::AssignmentConverter).to receive(:convert).and_return(canvas_assignment)
         migrator.migrate
         expect(canvas_course.assignments).to eq [canvas_assignment, canvas_assignment]
       end
 
       it 'converts folders' do
         moodle_course.folders = [:folder1, :folder2]
-        allow_any_instance_of(Moodle2CC::Moodle2Converter::FolderConverter).to receive(:convert).and_return(canvas_page)
+        allow_any_instance_of(Moodle2AA::Moodle2Converter::FolderConverter).to receive(:convert).and_return(canvas_page)
         migrator.migrate
         expect(canvas_course.pages.compact).to eq [canvas_page, canvas_page]
       end
 
       it 'converts books' do
         moodle_course.books = [:book1, :book2]
-        allow_any_instance_of(Moodle2CC::Moodle2Converter::BookConverter).to receive(:convert_to_pages).and_return([canvas_page])
+        allow_any_instance_of(Moodle2AA::Moodle2Converter::BookConverter).to receive(:convert_to_pages).and_return([canvas_page])
         migrator.migrate
 
         expect(canvas_course.pages.compact).to eq [canvas_page, canvas_page]
@@ -99,7 +99,7 @@ module Moodle2CC
 
       it 'converts glossaries' do
         moodle_course.glossaries = [:glossary1, :glossary1]
-        allow_any_instance_of(Moodle2CC::Moodle2Converter::GlossaryConverter).to receive(:convert).and_return(canvas_page)
+        allow_any_instance_of(Moodle2AA::Moodle2Converter::GlossaryConverter).to receive(:convert).and_return(canvas_page)
         migrator.migrate
 
         expect(canvas_course.pages.compact).to eq [canvas_page, canvas_page]
@@ -107,10 +107,10 @@ module Moodle2CC
 
       context 'sections' do
         it 'converts sections with summaries to pages' do
-          allow_any_instance_of(Moodle2CC::Moodle2Converter::SectionConverter).to receive(:convert_to_summary_page).and_return(canvas_page)
-          section1 = Moodle2CC::Moodle2::Models::Section.new
+          allow_any_instance_of(Moodle2AA::Moodle2Converter::SectionConverter).to receive(:convert_to_summary_page).and_return(canvas_page)
+          section1 = Moodle2AA::Moodle2::Models::Section.new
           section1.summary = 'summary'
-          section2 = Moodle2CC::Moodle2::Models::Section.new
+          section2 = Moodle2AA::Moodle2::Models::Section.new
           section2.summary = '  '
           moodle_course.sections = [section1, section2]
           migrator.migrate
@@ -119,11 +119,11 @@ module Moodle2CC
         end
 
         it 'converts sections to modules' do
-          section1 = Moodle2CC::Moodle2::Models::Section.new
+          section1 = Moodle2AA::Moodle2::Models::Section.new
           section1.summary = 'summary'
-          section2 = Moodle2CC::Moodle2::Models::Section.new
+          section2 = Moodle2AA::Moodle2::Models::Section.new
           section2.summary = '  '
-          allow_any_instance_of(Moodle2CC::Moodle2Converter::SectionConverter).to receive(:convert).and_return(:canvas_module)
+          allow_any_instance_of(Moodle2AA::Moodle2Converter::SectionConverter).to receive(:convert).and_return(:canvas_module)
           moodle_course.sections = [section1, section2]
           migrator.migrate
 
@@ -133,9 +133,9 @@ module Moodle2CC
 
       context '#resolve_duplicate_page_titles!' do
         it "should order renumbering of page titles according to position in index" do
-          page1 = Moodle2CC::CanvasCC::Models::Page.new
-          page2 = Moodle2CC::CanvasCC::Models::Page.new
-          page3 = Moodle2CC::CanvasCC::Models::Page.new
+          page1 = Moodle2AA::CanvasCC::Models::Page.new
+          page2 = Moodle2AA::CanvasCC::Models::Page.new
+          page3 = Moodle2AA::CanvasCC::Models::Page.new
 
           canvas_course.pages = [page1, page2, page3]
           canvas_course.pages.each_with_index do |page, idx|
@@ -143,13 +143,13 @@ module Moodle2CC
             page.title = 'page title'
           end
 
-          module1 = Moodle2CC::CanvasCC::Models::CanvasModule.new
-          module_item1 = Moodle2CC::CanvasCC::Models::ModuleItem.new
+          module1 = Moodle2AA::CanvasCC::Models::CanvasModule.new
+          module_item1 = Moodle2AA::CanvasCC::Models::ModuleItem.new
           module_item1.identifierref = page3.identifier
           module1.module_items = [module_item1]
 
-          module2 = Moodle2CC::CanvasCC::Models::CanvasModule.new
-          module_item2 = Moodle2CC::CanvasCC::Models::ModuleItem.new
+          module2 = Moodle2AA::CanvasCC::Models::CanvasModule.new
+          module_item2 = Moodle2AA::CanvasCC::Models::ModuleItem.new
           module_item2.identifierref = page2.identifier
           module2.module_items = [module_item2]
 
@@ -167,18 +167,18 @@ module Moodle2CC
         let(:converter){double('invitation', :convert => 'converted_html')}
 
         before(:each) do
-          allow(Moodle2CC::Moodle2Converter::HtmlConverter).to receive(:new).and_return(converter)
+          allow(Moodle2AA::Moodle2Converter::HtmlConverter).to receive(:new).and_return(converter)
         end
 
         it 'converts pages' do
-          canvas_course.pages = [Moodle2CC::CanvasCC::Models::Page.new, Moodle2CC::CanvasCC::Models::Page.new]
+          canvas_course.pages = [Moodle2AA::CanvasCC::Models::Page.new, Moodle2AA::CanvasCC::Models::Page.new]
           migrator.migrate
           expect(converter).to have_received(:convert).exactly(2)
           canvas_course.pages.each{|page| expect(page.body).to eq 'converted_html'}
         end
 
         it 'converts discussions' do
-          canvas_course.discussions = [Moodle2CC::CanvasCC::Models::Discussion.new, Moodle2CC::CanvasCC::Models::Discussion.new]
+          canvas_course.discussions = [Moodle2AA::CanvasCC::Models::Discussion.new, Moodle2AA::CanvasCC::Models::Discussion.new]
           migrator.migrate
           expect(converter).to have_received(:convert).exactly(2)
           canvas_course.discussions.each{|discussion| expect(discussion.text).to eq 'converted_html'}
@@ -186,7 +186,7 @@ module Moodle2CC
 
         it 'converts assignments' do
           moodle_course.show_grades = false
-          canvas_course.assignments = [Moodle2CC::CanvasCC::Models::Assignment.new, Moodle2CC::CanvasCC::Models::Assignment.new]
+          canvas_course.assignments = [Moodle2AA::CanvasCC::Models::Assignment.new, Moodle2AA::CanvasCC::Models::Assignment.new]
           migrator.migrate
           expect(converter).to have_received(:convert).exactly(2)
           canvas_course.assignments.each{|assignment| expect(assignment.body).to eq 'converted_html'}
@@ -194,7 +194,7 @@ module Moodle2CC
         end
 
         it 'converts assessment' do
-          canvas_course.assessments = [Moodle2CC::CanvasCC::Models::Assessment.new, Moodle2CC::CanvasCC::Models::Assessment.new]
+          canvas_course.assessments = [Moodle2AA::CanvasCC::Models::Assessment.new, Moodle2AA::CanvasCC::Models::Assessment.new]
           migrator.migrate
           expect(converter).to have_received(:convert).exactly(2)
           canvas_course.assessments.each do |assessment|
@@ -204,14 +204,14 @@ module Moodle2CC
         end
 
         it 'converts assessment questions' do
-          assmt = Moodle2CC::CanvasCC::Models::Assessment.new
-          q1 = Moodle2CC::CanvasCC::Models::Question.new
-          a1 = Moodle2CC::CanvasCC::Models::Answer.new
+          assmt = Moodle2AA::CanvasCC::Models::Assessment.new
+          q1 = Moodle2AA::CanvasCC::Models::Question.new
+          a1 = Moodle2AA::CanvasCC::Models::Answer.new
           q1.answers = [a1]
 
-          q_group = Moodle2CC::CanvasCC::Models::QuestionGroup.new
-          q2 = Moodle2CC::CanvasCC::Models::Question.new
-          a2 = Moodle2CC::CanvasCC::Models::Answer.new
+          q_group = Moodle2AA::CanvasCC::Models::QuestionGroup.new
+          q2 = Moodle2AA::CanvasCC::Models::Question.new
+          a2 = Moodle2AA::CanvasCC::Models::Answer.new
           q2.answers = [a2]
           q_group.questions = [q2]
 
@@ -226,10 +226,10 @@ module Moodle2CC
         end
 
         it 'converts question bank questions' do
-          qb = Moodle2CC::CanvasCC::Models::QuestionBank.new
-          q1 = Moodle2CC::CanvasCC::Models::CalculatedQuestion.new
+          qb = Moodle2AA::CanvasCC::Models::QuestionBank.new
+          q1 = Moodle2AA::CanvasCC::Models::CalculatedQuestion.new
           allow(q1).to receive(:post_process!)
-          a1 = Moodle2CC::CanvasCC::Models::Answer.new
+          a1 = Moodle2AA::CanvasCC::Models::Answer.new
           q1.general_feedback = 'a'
           a1.feedback = 'a'
 

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Parsers
+module Moodle2AA::Moodle2::Parsers
   describe ResourceParser do
     subject(:parser) { ResourceParser.new(fixture_path(File.join('moodle2', 'backup'))) }
 
@@ -9,7 +9,7 @@ module Moodle2CC::Moodle2::Parsers
 
       expect(resources.count).to eq 2
       resource = resources.first
-      expect(resource).to be_a Moodle2CC::Moodle2::Models::Resource
+      expect(resource).to be_a Moodle2AA::Moodle2::Models::Resource
       expect(resource.id).to eq "1"
       expect(resource.name).to eq "Test File"
       expect(resource.module_id).to eq "3"

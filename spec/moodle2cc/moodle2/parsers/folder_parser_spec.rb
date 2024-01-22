@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Parsers
+module Moodle2AA::Moodle2::Parsers
   describe FolderParser do
 
     subject { FolderParser.new(fixture_path(File.join('moodle2', 'backup'))) }

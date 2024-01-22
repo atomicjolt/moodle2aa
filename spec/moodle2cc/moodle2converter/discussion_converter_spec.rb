@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter
+module Moodle2AA::Moodle2Converter
 describe DiscussionConverter do
-  let(:forum){Moodle2CC::Moodle2::Models::Forum.new}
+  let(:forum){Moodle2AA::Moodle2::Models::Forum.new}
 
     it 'converts a moodle forum to a canvas discussion' do
       forum.id = '3'

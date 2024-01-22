@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe TrueFalseQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('true_false_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('true_false_question')}
 
     it 'creates the question item xml for a true_false_question' do
       question.identifier = 42
@@ -11,12 +11,12 @@ module Moodle2CC::CanvasCC
       question.general_feedback = 'unconstructive feedback'
       question.material = 'materia'
 
-      true_answer = Moodle2CC::CanvasCC::Models::Answer.new
+      true_answer = Moodle2AA::CanvasCC::Models::Answer.new
       true_answer.id = 'tr00'
       true_answer.fraction = 1.0
       true_answer.answer_text = 'so true'
       true_answer.feedback = 'was there ever any doubt?'
-      false_answer = Moodle2CC::CanvasCC::Models::Answer.new
+      false_answer = Moodle2AA::CanvasCC::Models::Answer.new
       false_answer.id = 'furse'
       false_answer.fraction = 0.0
       false_answer.answer_text = 'falrse'

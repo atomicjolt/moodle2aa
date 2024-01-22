@@ -1,6 +1,6 @@
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 require 'nokogiri'
 
 class TestUnitCCConverter < MiniTest::Test

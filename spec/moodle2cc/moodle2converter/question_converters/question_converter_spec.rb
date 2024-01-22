@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe QuestionConverter do
 
     class FooBarConverter < QuestionConverter
@@ -10,7 +10,7 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
       converter = FooBarConverter.new
       allow(converter).to receive(:convert_question)
 
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.new
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.new
       moodle_question.type = 'foobar'
 
       allow(FooBarConverter).to receive(:new).and_return(converter)
@@ -20,7 +20,7 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
     end
 
     it 'raises an exception for unknown converter types' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.new
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.new
       moodle_question.type = 'nonexistenttype'
 
       expect {
@@ -30,13 +30,13 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
 
     it 'converts common question attributes' do
       converter = QuestionConverter.new
-      mock_canvas_question = Moodle2CC::CanvasCC::Models::Question.new
+      mock_canvas_question = Moodle2AA::CanvasCC::Models::Question.new
       allow(converter).to receive(:create_canvas_question).and_return(mock_canvas_question)
 
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.new
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.new
       moodle_question.id = 42
       moodle_question.name = 'has anyone really been far even as decided to use even go want to do look more like'
-      answer = Moodle2CC::Moodle2::Models::Quizzes::Answer.new
+      answer = Moodle2AA::Moodle2::Models::Quizzes::Answer.new
       answer.id = 'blah'
       moodle_question.answers = [answer]
       moodle_question.max_mark = 2
@@ -56,10 +56,10 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
 
     it 'converts markdown text in question to html material' do
       converter = QuestionConverter.new
-      mock_canvas_question = Moodle2CC::CanvasCC::Models::Question.new
+      mock_canvas_question = Moodle2AA::CanvasCC::Models::Question.new
       allow(converter).to receive(:create_canvas_question).and_return(mock_canvas_question)
 
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.new
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.new
       moodle_question.question_text = "This is **bold** and this is _italic_"
       moodle_question.question_text_format = 4 # markdown
 
@@ -72,10 +72,10 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
     it 'converts standard questions' do
       converter = QuestionConverter.new
 
-      converted_question = converter.convert(Moodle2CC::Moodle2::Models::Quizzes::Question.create('essay'))
+      converted_question = converter.convert(Moodle2AA::Moodle2::Models::Quizzes::Question.create('essay'))
       expect(converted_question.question_type).to eq 'essay_question'
 
-      converted_question = converter.convert(Moodle2CC::Moodle2::Models::Quizzes::Question.create('shortanswer'))
+      converted_question = converter.convert(Moodle2AA::Moodle2::Models::Quizzes::Question.create('shortanswer'))
       expect(converted_question.question_type).to eq 'short_answer_question'
     end
 

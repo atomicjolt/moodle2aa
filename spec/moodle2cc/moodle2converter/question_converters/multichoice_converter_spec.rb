@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2Converter::QuestionConverters
+module Moodle2AA::Moodle2Converter::QuestionConverters
   describe MultichoiceConverter do
 
     it 'converts multiple choice questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('multichoice')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('multichoice')
       moodle_question.id = 'something'
       moodle_question.single = true
 
@@ -14,7 +14,7 @@ module Moodle2CC::Moodle2Converter::QuestionConverters
     end
 
     it 'converts multiple answer questions' do
-      moodle_question = Moodle2CC::Moodle2::Models::Quizzes::Question.create('multichoice')
+      moodle_question = Moodle2AA::Moodle2::Models::Quizzes::Question.create('multichoice')
       moodle_question.id = 'something'
       moodle_question.single = false
 

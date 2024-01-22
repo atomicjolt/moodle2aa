@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::LabelConverter do
     let(:moodle_label) { Moodle2::Models::Label.new }
 
@@ -92,7 +92,7 @@ module Moodle2CC
 
         page = pages.first
 
-        expect(page.title.length).to eq Moodle2CC::Moodle2Converter::ConverterHelper::MAX_TITLE_LENGTH
+        expect(page.title.length).to eq Moodle2AA::Moodle2Converter::ConverterHelper::MAX_TITLE_LENGTH
         expect(page.body).to eq moodle_label.intro
       end
     end

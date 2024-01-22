@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2::Models
+module Moodle2AA::Moodle2::Models
   describe Folder do
 
     it_behaves_like 'it has an attribute for', :id

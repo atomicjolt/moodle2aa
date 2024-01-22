@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC
+module Moodle2AA
   describe Moodle2Converter::HtmlConverter do
     subject { Moodle2Converter::HtmlConverter.new(canvas_course.files, moodle_course) }
     let(:canvas_course) do

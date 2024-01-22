@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'minitest/autorun'
 require 'test_helper'
-require 'moodle2cc'
+require 'moodle2aa'
 
 class TestUnitCanvasWebLink < MiniTest::Test
   include TestHelper
@@ -16,13 +16,13 @@ class TestUnitCanvasWebLink < MiniTest::Test
   end
 
   def test_it_inherits_from_cc
-    assert Moodle2CC::Canvas::WebLink.ancestors.include?(Moodle2CC::CC::WebLink), 'does not inherit from base CC class'
+    assert Moodle2AA::Canvas::WebLink.ancestors.include?(Moodle2AA::CC::WebLink), 'does not inherit from base CC class'
   end
 
 
   def test_it_creates_item_in_module_meta
     @mod.reference = "http://www.google.com/some-doc.html"
-    web_link = Moodle2CC::Canvas::WebLink.new @mod
+    web_link = Moodle2AA::Canvas::WebLink.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(web_link.create_module_meta_item_node(node, 5))
 
@@ -37,7 +37,7 @@ class TestUnitCanvasWebLink < MiniTest::Test
     assert_equal 'i15aaccec404aa2ad557108a689bbba8f', xml.root.xpath('identifierref').text
 
     @mod.reference = "some/local/file.html"
-    web_link = Moodle2CC::Canvas::WebLink.new @mod
+    web_link = Moodle2AA::Canvas::WebLink.new @mod
     node = Builder::XmlMarkup.new
     xml = Nokogiri::XML(web_link.create_module_meta_item_node(node, 5))
 

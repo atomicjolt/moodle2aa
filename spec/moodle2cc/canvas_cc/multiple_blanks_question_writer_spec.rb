@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe MultipleBlanksQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('fill_in_multiple_blanks_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('fill_in_multiple_blanks_question')}
 
     it 'creates the question item xml for a multiple blanks question' do
       question.identifier = 4200
@@ -11,14 +11,14 @@ module Moodle2CC::CanvasCC
       question.general_feedback = 'feedbacks'
       question.material = 'the first question is: [response1] and the second is: [response2]'
 
-      answer1 = Moodle2CC::CanvasCC::Models::Answer.new
+      answer1 = Moodle2AA::CanvasCC::Models::Answer.new
       answer1.id = '1'
       answer1.fraction = 1
       answer1.answer_text = 'i take specs seriously'
       answer1.feedback = 'feedfbavks'
       answer1.resp_ident = 'response1'
 
-      answer2 = Moodle2CC::CanvasCC::Models::Answer.new
+      answer2 = Moodle2AA::CanvasCC::Models::Answer.new
       answer2.id = '2'
       answer2.fraction = 1
       answer2.answer_text = 'imm the right one for the second'

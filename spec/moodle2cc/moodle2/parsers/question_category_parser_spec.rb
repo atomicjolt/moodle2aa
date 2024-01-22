@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2
+module Moodle2AA::Moodle2
   describe Parsers::QuestionCategoryParser do
     subject(:parser) {Parsers::QuestionCategoryParser.new(fixture_path(File.join('moodle2', 'backup')))}
 

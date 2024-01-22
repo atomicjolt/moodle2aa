@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC::Models
+module Moodle2AA::CanvasCC::Models
   describe Course do
     subject(:course) { Course.new }
 

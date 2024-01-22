@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-module Moodle2CC::CanvasCC
+module Moodle2AA::CanvasCC
   describe ShortAnswerQuestionWriter do
 
-    let(:question) { Moodle2CC::CanvasCC::Models::Question.create('short_answer_question')}
+    let(:question) { Moodle2AA::CanvasCC::Models::Question.create('short_answer_question')}
 
     it 'creates the question item xml for an short_answer_question' do
       question.identifier = 422
@@ -11,7 +11,7 @@ module Moodle2CC::CanvasCC
       question.general_feedback = 'more constructive feedback'
       question.material = 'materials galore'
 
-      answer = Moodle2CC::CanvasCC::Models::Answer.new
+      answer = Moodle2AA::CanvasCC::Models::Answer.new
       answer.id = 'answe_id'
       answer.answer_text = 'the answer'
       answer.feedback = 'so much feedback'

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Moodle2CC::CanvasCC::Models::CalculatedQuestion do
+describe Moodle2AA::CanvasCC::Models::CalculatedQuestion do
 
   context '#post_process!' do
     it 'should replace {variables} with [variables] in material' do
@@ -12,7 +12,7 @@ describe Moodle2CC::CanvasCC::Models::CalculatedQuestion do
     end
 
     it 'should replace {variables} with variables in formulae (and strip =)' do
-      answer = Moodle2CC::CanvasCC::Models::Answer.new
+      answer = Moodle2AA::CanvasCC::Models::Answer.new
       answer.answer_text = "={A}*{B}"
       subject.answers = [answer]
 

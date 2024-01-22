@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-module Moodle2CC::Moodle2
+module Moodle2AA::Moodle2
   describe Parsers::LabelParser do
 
     subject(:parser) { Parsers::LabelParser.new(fixture_path(File.join('moodle2', 'backup')))}
