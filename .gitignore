@@ -19,3 +19,5 @@ test/tmp/*
 test/version_tmp
 tmp
 vendor
+out
+moodle_test.mbz

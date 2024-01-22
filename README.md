@@ -21,11 +21,14 @@ This project is derived from the [moodle2aa](https://github.com/instructure/mood
 Install RubyGems on your system, see http://rubygems.org/ for instructions.
 Once RubyGems is installed you can install this gem:
 
-    $ gem install moodle2aa
+Clone this project into a local directory. CD into that directory and run
+`bundle install`
+`gem build`
+`gem install moodle2aa`
 
 Convert a moodle .zip into Atomic Assessments format
 
-    $ moodle2aa migrate <path-to-moodle-backup> <path-to-aa-export-directory>
+    $ ./bin/moodle2aa migrate <path-to-moodle-backup> <path-to-aa-export-directory>
 
 ### In a Ruby application
 
