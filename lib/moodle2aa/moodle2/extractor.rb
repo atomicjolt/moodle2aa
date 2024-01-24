@@ -59,7 +59,7 @@ module Moodle2AA::Moodle2
         end
       else
         type = `file "#{@backup_path}"`
-        if / Zip archive /i.match(type) 
+        if / Zip archive /i.match(type)
           Zip::File.open(@backup_path) do |zip_file|
             zip_file.each do |f|
               f_path=File.join(work_dir, f.name)
@@ -68,8 +68,9 @@ module Moodle2AA::Moodle2
             end
           end
         else
+          real_path = Pathname.new(@backup_path).realpath
           Dir.chdir(work_dir) do
-            system("tar xzf '#{@backup_path}'")
+            system("tar xzf '#{real_path}'")
           end
         end
       end
