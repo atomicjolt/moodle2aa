@@ -45,7 +45,7 @@ module Moodle2AA::Moodle2
         question.version = parse_text(node, 'version')
         question.hidden = parse_boolean(node, 'hidden')
         question.penalty = parse_text(node, 'penalty')
-        question.hints = node.search('question_hints/question_hint').map do |n| 
+        question.hints = node.search('question_hints/question_hint').map do |n|
           parse_text(n, 'hint')
         end
 
@@ -53,6 +53,7 @@ module Moodle2AA::Moodle2
       rescue Exception => e
         Moodle2AA::OutputLogger.logger.info e.message
         nil
+        exit
       end
     end
 

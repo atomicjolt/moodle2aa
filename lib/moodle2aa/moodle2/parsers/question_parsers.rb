@@ -13,5 +13,9 @@ module Moodle2AA::Moodle2::Parsers
     require_relative 'question_parsers/essay_parser'
     require_relative 'question_parsers/unknowntype_parser'
     require_relative 'question_parsers/gapselect_parser'
+
+    module Wiris
+      require_relative 'question_parsers/wiris/wiris_parser'
+    end
   end
 end

@@ -22,5 +22,10 @@ module Moodle2AA::Learnosity
     require_relative 'converters/html_converter'
     require_relative 'converters/file_converter'
     require_relative 'converters/gapselect_converter'
+
+    module Wiris
+      require_relative 'converters/wiris/multichoice_converter'
+      require_relative 'converters/wiris/shortanswer_converter'
+    end
   end
 end

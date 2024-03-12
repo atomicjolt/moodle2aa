@@ -7,7 +7,7 @@ module Moodle2AA::Learnosity::Converters
       @moodle_course = moodle_course
       @html_converter = html_converter
       @expressions = {}
-      
+
       # load all variables from question definition
       collect_vars(moodle_question)
       normalize_vars
@@ -17,7 +17,7 @@ module Moodle2AA::Learnosity::Converters
 
     # update @vars with moodle_question variables
     def collect_vars(moodle_question)
-      if moodle_question.type == 'calculatedquestiongroup' || 
+      if moodle_question.type == 'calculatedquestiongroup' ||
           moodle_question.type == 'quizpage'
         moodle_question.questions.each do |subquestion|
           collect_vars(subquestion)
@@ -68,7 +68,7 @@ module Moodle2AA::Learnosity::Converters
       # remove empty variables
       @vars = @vars.select { |set| set[:values].count != 0 }
     end
-    
+
     def normalize_vars # make sure all vars have the same number of values
       maxcount = (@vars.map { |set| set[:values].count }).max
       mincount = (@vars.map { |set| set[:values].count }).min
@@ -99,7 +99,7 @@ module Moodle2AA::Learnosity::Converters
 
       groups.each do |group|
         matching = @vars.select {|set| set[:group] == group}
-        
+
         seed = (rng.rand*1000000).to_i
         matching.each do |set|
           # deterministic shuffle
@@ -134,7 +134,7 @@ module Moodle2AA::Learnosity::Converters
     def convert_answer(expr, format, moodle_question)
       convert_formula expr, format, moodle_question, 'ans'
     end
-    
+
     # convert a single variable, e.g. {A}
     def convert_variable var, moodle_question
 
@@ -163,7 +163,7 @@ module Moodle2AA::Learnosity::Converters
         as_expr = convert_formula_as_formula expr, format, moodle_question
         as_var = convert_formula_as_variable expr, format, moodle_question, type
         out = [as_expr, as_var]
-        
+
         if m = as_var.match(/^\{\{var:(.*)\}\}$/)
           raw_var = m[1]
         else
@@ -226,14 +226,14 @@ module Moodle2AA::Learnosity::Converters
           evalobj.add_variable(var[:name], var[:values])
         end
       end
-      
+
       Range.new(0,maxcount-1).each do |variant|
         evalobj.set_variant variant
         set[:values][variant] = evalobj.evaluate expr, format
       end
       #pp set[:values]
     end
-    
+
     # Convert an expression from Moodle to Learnosity syntax.
     def formula_to_learnosity(expr, format)
       # TODO this isn't complete
@@ -270,13 +270,13 @@ module Moodle2AA::Learnosity::Converters
     def has_truncated_rows?
       @truncated_rows
     end
-    
+
 
     def generate_dynamic_content_data
       # number of variants = maximum number of values over all variables
       maxcount = (@vars.map { |set| set[:values].count }).max
       return '' if maxcount == 0 || !maxcount
-      
+
       unique = []
       @vars.each do |var|
          unique << var unless unique.detect {|var2| var2[:output_name] == var[:output_name]}
@@ -296,7 +296,7 @@ module Moodle2AA::Learnosity::Converters
     def dump_variables
       return '' if @vars.count == 0
       out = []
-      if has_shuffled_vars? 
+      if has_shuffled_vars?
         out << "SHUFFLED Dataset:"
       end
       out << (@vars.map {|v| v[:datasetid]?v[:output_name]:v[:output_name]+"="+v[:name]}).join(",").gsub(/[{}]/,'')
@@ -307,7 +307,7 @@ module Moodle2AA::Learnosity::Converters
       end
       out.join "\n"
     end
-    
+
     def dump_csv
       return '' if @vars.count == 0
       CSV.generate do |csv|

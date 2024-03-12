@@ -1,3 +1,5 @@
+require "byebug"
+
 module Moodle2AA::Learnosity::Converters
   class QuestionConverter
     include ConverterHelper
@@ -20,12 +22,13 @@ module Moodle2AA::Learnosity::Converters
       if item
         return item, content
       end
-        
+
       type = moodle_question.type
       if type && c = @@subclasses[type]
         item, content = c.new(@moodle_course, @html_converter).convert_question(moodle_question)
       else
         report_add_warn(moodle_question, LEARNING, "unknown_question_type=#{type}", "question/preview.php?id=#{moodle_question.id}&courseid=#{report_current_course_id}")
+        puts "Unknown question type: #{type}"
         # Pretend it's a description question and convert
         # TODO: convert unknown question types to something
         #raise "Unknown converter type: #{type}" if !Moodle2AA::MigrationReport.convert_unknown_qtypes?
@@ -46,7 +49,7 @@ module Moodle2AA::Learnosity::Converters
       #question.comment = moodle_question.general_feedback
       #question.name = moodle_question.name
       #question.text = convert_question_text(moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          title: moodle_question.name,
                          import_status: IMPORT_STATUS_COMPLETE,
                          features: [feature])
@@ -87,17 +90,17 @@ module Moodle2AA::Learnosity::Converters
       question.data[:is_math] = has_math?(question.data[:stimulus])
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          title: name,
                          import_status: manual_conversion ? IMPORT_STATUS_MANUAL : IMPORT_STATUS_BAD,
                          questions: [question])
       return item, [question]
     end
 
-    def create_item(moodle_question: , 
-                    title: nil, 
+    def create_item(moodle_question: ,
+                    title: nil,
                     import_status: ,
-                    notes: [], 
+                    notes: [],
                     todo: [],
                     features: [],
                     questions: [],
@@ -150,7 +153,7 @@ module Moodle2AA::Learnosity::Converters
         questions = [moodle_question]
       end
 
-      if preview 
+      if preview
         urls = questions.map {|q| "#{@moodle_course.url}/question/preview.php?id=#{q.id}&courseid=#{report_current_course_id}&behaviour=immediatefeedback" }
       else
         urls = questions.map {|q| "#{@moodle_course.url}/question/question.php?id=#{q.id}&courseid=#{report_current_course_id}" }
@@ -193,14 +196,14 @@ module Moodle2AA::Learnosity::Converters
       material = material.gsub(/<script.*?<\/script>/m, '')
       @html_converter.convert(material, 'question', 'questiontext', moodle_question.id)
     end
-    
+
     def convert_answer_text(moodle_answer)
       material = moodle_answer.answer_text || ''
       material = RDiscount.new(material).to_html if moodle_answer.answer_format.to_i == 4 # markdown
       material = convert_latex material
       @html_converter.convert(material, 'question', 'answer', moodle_answer.id)
     end
-    
+
     def convert_answer_feedback(moodle_answer)
       material = moodle_answer.feedback || ''
       material = RDiscount.new(material).to_html if moodle_answer.feedback_format.to_i == 4 # markdown
@@ -260,7 +263,7 @@ module Moodle2AA::Learnosity::Converters
       material = convert_latex material
       @html_converter.convert(material, 'question', 'generalfeedback', moodle_question.id)
     end
-    
+
     def convert_other_feedback(moodle_question, feedback, file_area)
       material = feedback || ''
       material = convert_latex material
@@ -324,13 +327,13 @@ module Moodle2AA::Learnosity::Converters
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
       #add_instructor_stimulus(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          title: moodle_question.name,
                          import_status: IMPORT_STATUS_COMPLETE,
                          questions: [question])
       return item, [question]
     end
-    
+
     def set_penalty_options(question, moodle_question)
       if moodle_question.penalty
         penalty = moodle_question.penalty.to_f * 100
@@ -340,7 +343,7 @@ module Moodle2AA::Learnosity::Converters
       question.data[:feedback_attempts] = moodle_question.hints.count + 1
       question.data[:instant_feedback] = true
     end
-    
+
     def add_instructor_stimulus(subcontent, moodle_question)
         subcontent = [subcontent] if !subcontent.is_a? Array
         subcontent[0].data[:instructor_stimulus] ||= ''
