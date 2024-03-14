@@ -32,7 +32,6 @@ module Moodle2AA::Moodle2::Models::Quizzes
                   :penalty, :qtype, :length, :stamp, :version, :hidden, :answers, :type
     attr_accessor :category_name  # for learnosity random conversion
     attr_accessor :category_id  # for learnosity synchronized calc conversion
-    attr_accessor :algorithms
     attr_accessor :hints, :penalty
 
     def initialize

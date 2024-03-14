@@ -16,6 +16,8 @@ module Moodle2AA::Moodle2::Parsers
 
     module Wiris
       require_relative 'question_parsers/wiris/wiris_parser'
+      require_relative 'question_parsers/wiris/short_answer_parser'
+      require_relative 'question_parsers/wiris/multichoicewiris_parser'
     end
   end
 end

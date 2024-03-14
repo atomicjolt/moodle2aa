@@ -14,5 +14,6 @@ module Moodle2AA::Moodle2::Models::Quizzes
   require_relative 'quizzes/essay_question'
   require_relative 'quizzes/unknowntype_question'
   require_relative 'quizzes/gapselect_question'
+  require_relative 'quizzes/wiris_question'
 end
 
