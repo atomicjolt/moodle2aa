@@ -1,10 +1,12 @@
 require 'byebug'
 
 module Moodle2AA::Learnosity::Converters
-  class MultiAnswerConverter < QuestionConverter
-    register_converter_type 'multianswer'
+  class MultiAnswerWirisConverter < QuestionConverter
+    register_converter_type 'multianswerwiris'
 
     def convert_question(moodle_question)
+      # byebug if moodle_question.name == 'Q3Q5'
+      byebug
 
       questions = [] # may have to break into multiple questions
       notes = []

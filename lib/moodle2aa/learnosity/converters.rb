@@ -25,7 +25,8 @@ module Moodle2AA::Learnosity
 
     module Wiris
       require_relative 'converters/wiris/multichoice_converter'
-      require_relative 'converters/wiris/shortanswer_converter'
+      require_relative 'converters/wiris/shortanswerwiris_converter'
+      require_relative 'converters/wiris/multianswerwiris_converter'
     end
   end
 end

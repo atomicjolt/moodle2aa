@@ -13,7 +13,7 @@ module Moodle2AA::Moodle2
       node.at_xpath("plugin_qtype_#{type}_question")
     end
 
-    def get_code(node, type)
+    def get_wiris_node(node, type)
       plugin_node = get_plugin_node(node, type)
       return nil unless plugin_node
 
@@ -22,17 +22,26 @@ module Moodle2AA::Moodle2
       # Question doesn't have anything for us to parse out
       return nil if question_xml.nil? || question_xml.text == "&lt;question/&gt;"
 
-      sheet = Nokogiri::XML(question_xml.text)
+      Nokogiri::XML(question_xml.text)
+    end
+
+    def get_code(node, type)
+
+      sheet = get_wiris_node(node, type)
+      return [] if sheet.nil?
+
       # Wrapped in a CDATA tag so we need to parse it out
       cas_session_node = Nokogiri::XML(sheet.xpath("question/wirisCasSession").text)
       algorithms = cas_session_node.xpath("//algorithm").map(&:text)
+      algorithms_format = :code
 
       if algorithms.empty?
         sheets = cas_session_node.xpath("//task")
         algorithms = sheets.map { |s| s.to_xml }
+        algorithms_format = :mathml
       end
 
-      algorithms
+      [algorithms, algorithms_format]
     end
 
     def get_answers(node, type)

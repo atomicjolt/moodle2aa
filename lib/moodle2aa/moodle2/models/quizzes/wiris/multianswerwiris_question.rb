@@ -1,6 +1,7 @@
-module Moodle2AA::Moodle2::Models::Quizzes
-  class MultianswerQuestion < Question
-    register_question_type 'multianswer'
+
+module Moodle2AA::Moodle2::Models::Quizzes::Wiris
+  class MultiansweWirisQuestion < WirisQuestion
+    register_question_type 'multianswerwiris'
 
     attr_accessor :embedded_question_references, :embedded_questions
 
