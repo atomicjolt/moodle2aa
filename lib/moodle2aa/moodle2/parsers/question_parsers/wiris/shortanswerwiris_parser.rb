@@ -1,3 +1,4 @@
+require "mathml2asciimath"
 require 'byebug'
 
 module Moodle2AA::Moodle2
@@ -14,6 +15,12 @@ module Moodle2AA::Moodle2
       question.casesensitive = parse_boolean(plugin_node, 'shortanswer/usecase')
 
       question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris')
+
+      byebug if question.algorithms == nil
+
+      puts '-----------------------------------'
+      puts question.algorithms.join("\n")
+
 
       question
     end
