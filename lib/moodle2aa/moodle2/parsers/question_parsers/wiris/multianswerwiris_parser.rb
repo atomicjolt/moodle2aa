@@ -15,8 +15,9 @@ module Moodle2AA::Moodle2
         question.embedded_question_references = sequence.text.split(',')
       end
 
-      # TODO: implement parsing out the sheet
-      # Learnosity doesn't support variables in cloze question dropdowns
+      question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris')
+
+      byebug if question.algorithms == nil
 
       question
     end

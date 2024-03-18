@@ -52,9 +52,9 @@ module Moodle2AA::Moodle2
 
       return [[], :none] if algorithms.empty?
 
-      # algorithms = algorithms.map do |algorithm|
-      #   algorithm.gsub('/#', '/*').gsub('#/', '*/')
-      # end
+      algorithms = algorithms.map do |algorithm|
+        clean_code_string(algorithm)
+      end
 
       return [algorithms, algorithms_format]
     end
@@ -75,10 +75,17 @@ module Moodle2AA::Moodle2
 
 
     def convert_math_ml(string)
-      MathML2AsciiMath.m2a(string).
-        gsub(/\s+/, '').
-        gsub(/\(([^)]+)\)/) { |match| "(" + match[1..-2].gsub(/;|\.\./, ',') + ")" }.
-        gsub('==', '=').
+      clean_code_string(
+        MathML2AsciiMath.m2a(string).
+        gsub(/ +/, ''). # Lot of extra spaces in the output
+        gsub(/\\/, ' ') # Non-breaking spaces are being substituted with backslashes for some reason
+      )
+    end
+
+    def clean_code_string(string)
+      # Normalizes some different syntaxes to a single syntax
+      string.
+        gsub(/\(([^\)]+)\)/) { |match| "(" + match[1..-2].gsub(/(;)|(\.\.)/, ',') + ")" }.
         gsub(':=', '=').
         strip
     end

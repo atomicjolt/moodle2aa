@@ -163,12 +163,12 @@ module MathML2AsciiMath
       .gsub(/\u2212/, "-")
       .gsub(/\u2061/, "") # function application
       .gsub(/\u2751/, "square")
-      .gsub(/[\u2028\u2029]/, " ") # normalize thin spaces like \u2009, \u2008
+      .gsub(/[\u2028\u2029]|\u00A0/, " ") # normalize thin spaces like \u2009, \u2008
   end
 
   def self.join_parsed_children(children, delimiter = " ")
     children.map do |n|
-      parse(n).strip
+      parse(n)
     end.join(delimiter)
   end
 
@@ -295,14 +295,16 @@ module MathML2AsciiMath
       join_parsed_children(node.children)
 
     when "mspace"
-      byebug
       "\n"
 
     when "ms"
       node.text
 
+    when "mpadded"
+      join_parsed_children(node.children)
+
     when "pi"
-      "var_PI"
+      "PI"
 
     else
       byebug

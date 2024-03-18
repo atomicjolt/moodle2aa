@@ -1,10 +1,12 @@
+require_relative './wiris_algorithm_converter'
 
 module Moodle2AA::Learnosity::Converters::Wiris
   class ShortAnswerWirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
     register_converter_type 'shortanswerwiris'
 
     def convert_question(moodle_question)
-      byebug
+      WirisAlgorithmConverter.new.convert_algorithms(moodle_question)
+
       question = Moodle2AA::Learnosity::Models::Question.new
       question.reference = generate_unique_identifier_for(moodle_question.id, '_question')
 
