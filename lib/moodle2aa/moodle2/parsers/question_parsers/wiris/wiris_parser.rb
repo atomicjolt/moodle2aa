@@ -1,5 +1,5 @@
 require 'byebug'
-require "mathml2asciimath"
+require_relative "./mathml2asciimath"
 
 module Moodle2AA::Moodle2
   class Parsers::QuestionParsers::Wiris::QuestionParser < Moodle2AA::Moodle2::Parsers::QuestionParsers::QuestionParser

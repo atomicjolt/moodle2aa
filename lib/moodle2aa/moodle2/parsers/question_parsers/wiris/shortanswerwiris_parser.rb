@@ -1,4 +1,3 @@
-require "mathml2asciimath"
 require 'byebug'
 
 module Moodle2AA::Moodle2

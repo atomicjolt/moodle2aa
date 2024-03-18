@@ -6,5 +6,3 @@ gemspec
 gem 'simplecov'
 
 gem "htmlentities", "~> 4.3"
-
-gem "mathml2asciimath", "~> 0.0.14"
