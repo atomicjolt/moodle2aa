@@ -3,13 +3,6 @@ require_relative "./mathml2asciimath"
 
 module Moodle2AA::Moodle2
   class Parsers::QuestionParsers::Wiris::QuestionParser < Moodle2AA::Moodle2::Parsers::QuestionParsers::QuestionParser
-    # register_parser_type 'shortanswerwiris'
-    # register_parser_type 'multichoicewiris'
-    # register_parser_type 'matchwiris'
-    # register_parser_type 'multianswerwiris'
-    # register_parser_type 'essaywiris'
-    # register_parser_type 'truefalsewiris'
-
     def get_plugin_node(node, type)
       node.at_xpath("plugin_qtype_#{type}_question")
     end
@@ -66,7 +59,7 @@ module Moodle2AA::Moodle2
 
     def get_algorithms_from_sheet(node)
       node.
-        xpath("//task//group/command/input").
+        xpath("//task//group/command").
         children.
         map(&:to_xml).
         map { |input| convert_math_ml(input) }.

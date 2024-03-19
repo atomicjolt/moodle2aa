@@ -32,21 +32,33 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       validation[:scoring_type] = "exactMatch"
 
-      # TODO: We can't just scan for substiution variables, we also need to scan for
-      # literal values that are not substitution variables. IE:
-      # r(s) = #tau <= Substitution variable
-      # r(s) = 1.0 <= Literal value
-      # I figure we can scan for equal signs and then take whats to the right of the equal sign as the value
-
       moodle_question.answers.each do |answer|
         response = {score: answer.fraction.to_f}
 
-        response[:value] = answer.answer_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).map do |match|
-          {
-            method: "equivLiteral",
-            value: "{{var:#{match.first}}}"
-          }
+        response[:value] = answer.answer_text_plain.scan(/(.+)=(.+)/).map do |match|
+          # If it has substitution variables, we need to convert them to the
+          # Learnosity format & we assume that we should compare by numerical
+          # equivalence. Otherwise, it's a literal value comparison.
+          if match[1].match(SUBSTITUTION_VARIABLE_REGEX)
+            [{
+              method: "equivValue",
+              result: match[1].gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}'),
+              options: {
+                # TODO: we should be able to infer this from the question
+                # however, it might be more effort than it's woth to get
+                # it right, so we'll just assume 2 decimal places for now
+                decimalPlaces: 2,
+              }
+            }]
+          else
+            [{
+                method: "equivLiteral",
+                value: match[1]
+            }]
+          end
         end
+
+        rationale << convert_answer_feedback(answer)
 
         if answer.fraction.to_f == 1 && !validation[:valid_response]
           validation[:valid_response] = response
@@ -55,46 +67,12 @@ module Moodle2AA::Learnosity::Converters::Wiris
         end
       end
 
-      # TODO: the template doesn't have new lines between responses
-      # Like they typically do in moodle
-      data[:template] = moodle_question.answers.first.answer_text_plain.gsub!(SUBSTITUTION_VARIABLE_REGEX, '{{response}}')
+      # TODO: don't use the plain text as the template, we should use
+      # the provided MathML (with variables swapped out)
+      data[:template] = moodle_question.answers.first.answer_text_plain.
+        gsub(/=(.+)/, '={{response}}').
+        gsub(/\n/, '<br>')
 
-      # moodle_question.answers.each do |answer|
-      #   value = answer.answer_text.strip
-
-      #   response = {score: answer.fraction.to_f}
-      #   # deal with wildcards, when we can
-
-      #   # leading/trailing *'s become substring matches
-      #   if value[0] == '*'
-      #     response['matching_rule'] = 'contains'
-      #     value[0] = ''
-      #   end
-      #   if value[-1] == '*' && value[-2] != '\\'
-      #     response['matching_rule'] = 'contains'
-      #     value[-1] = ''
-      #   end
-
-      #   if value.match(/[^\\]\*/)
-      #     # other wildcards.  Can't really handle these
-      #     # In most cases these are formulas and better converted to a math qtype.  For answers like red*blue an option would be
-      #     # to have two answer checkers.  In either case we'll leave these for manual conversion.
-      #     import_status = IMPORT_STATUS_MANUAL
-      #     todo << "Check short answer wildcards"
-      #     data[:instructor_stimulus] = render_conversion_notes("Learnosity short text questions don't support '*' wildcards.  Please review the question answers.")
-      #   end
-      #   # replace escaped * with literal *.  These are not wildcards in moodle.
-      #   value.gsub!(/[\\]\*/,'*')
-      #   response['value'] = value
-
-      #   rationale << convert_answer_feedback(answer)
-
-      #   if answer.fraction.to_f == 1 && !validation[:valid_response]
-      #     validation[:valid_response] = response
-      #   elsif answer.fraction.to_f > 0
-      #     validation[:alt_responses] << response
-      #   end
-      # end
       rationale.each { |feedback| data[:is_math] ||= has_math?(feedback) }
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
@@ -112,6 +90,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
                          questions: [question],
                          todo: todo,
                          data_table_script: js_script)
+
       return item, [question]
     end
   end

@@ -13,6 +13,8 @@ module Moodle2AA::Moodle2
       question.answers += plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
       question.casesensitive = parse_boolean(plugin_node, 'shortanswer/usecase')
 
+
+      byebug if question.name == 'EX2Q7b'
       question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris')
 
       question.answers.each do |answer|

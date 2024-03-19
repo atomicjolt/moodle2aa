@@ -307,6 +307,9 @@ module MathML2AsciiMath
     when "pi"
       "PI"
 
+    when "command"
+      input = parse(node.children.first)
+
     else
       byebug
       "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">" +
