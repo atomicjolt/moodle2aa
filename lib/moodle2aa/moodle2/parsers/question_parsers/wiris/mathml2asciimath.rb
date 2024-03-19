@@ -1,5 +1,5 @@
 require "nokogiri"
-require "byebug"
+require "debug"
 require "htmlentities"
 require "pp"
 
@@ -309,6 +309,28 @@ module MathML2AsciiMath
 
     when "command"
       input = parse(node.children.first)
+
+      # This is a super naive way of handling approximations
+      # from Wiris. It rounds the output of a line to the number
+      # of decimal places in the output. If it can't find a decimal
+      # place, it assumes 2.
+      if node["name"] == "approximate"
+        left, right = input.split("=")
+        return input if left.nil? || right.nil?
+
+        output = parse(node.children[1])
+        decimal = output.gsub(/ /, "").match(/.+\.(\d+)\z/)
+        decimal_places = decimal ? decimal[1].length : 2
+        "#{left} = round(#{right}, #{decimal_places})"
+      else
+        input
+      end
+
+    when "input"
+      join_parsed_children(node.children)
+
+    when "output"
+      join_parsed_children(node.children)
 
     else
       byebug

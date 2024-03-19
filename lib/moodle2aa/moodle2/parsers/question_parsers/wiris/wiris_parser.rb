@@ -59,8 +59,7 @@ module Moodle2AA::Moodle2
 
     def get_algorithms_from_sheet(node)
       node.
-        xpath("//task//group/command/input").
-        children.
+        xpath("//task//group/command").
         map(&:to_xml).
         map { |input| convert_math_ml(input) }.
         filter { |input| input != "" }
@@ -76,15 +75,16 @@ module Moodle2AA::Moodle2
     end
 
     def normalize_script_string(string)
-      # Normalizes some different syntaxes to a single syntax
+      # Normalizes some inconsitenices in the Wiris output
       string.
-        # gsub(/\(([^\)]+)\)/) { |match| "(" + match[1..-2].gsub(/(;)|(\.\.)/, ',') + ")" }.
+        # The way that elements are being seperated is inconsistent
+        # This normalizes it to be a comma seperated list
         gsub(/\((.+)\.\.(.+)\.\.(.+)\)/, "(\\1, \\2, \\3)").
         gsub(/\((.+)\.\.(.+)\)/, "(\\1, \\2)").
         gsub(/\((.+);(.+);(.+)\)/, "(\\1, \\2, \\3)").
         gsub(/\((.+);(.+)\)/, "(\\1, \\2)").
-        gsub(':=', '=').
-        gsub('Pi_', 'PI').
+        gsub(':=', '='). # := means assignment but not evaluation, so we'll just use =
+        gsub('Pi_', 'PI'). # The definition for PI is inconsistent
         strip
     end
   end
