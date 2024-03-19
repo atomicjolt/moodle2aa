@@ -9,6 +9,10 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
 
     SCRIPT_VARIABLE_REGEX = /^([\w\d]+)=/
 
+    def learnosity_question_text
+      learnosity_question_text = question_text.gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}')
+    end
+
     # Variables can be in: question_text, answers[*].answer_text,
     def substitution_variables
       return @substitution_variables if @substitution_variables

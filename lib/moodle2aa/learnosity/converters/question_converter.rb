@@ -106,7 +106,8 @@ module Moodle2AA::Learnosity::Converters
                     questions: [],
                     content: [],
                     extra_tags: [],
-                    dynamic_content_data: [])
+                    dynamic_content_data: [],
+                    data_table_script: nil)
       item = Moodle2AA::Learnosity::Models::Item.new
       item.reference = generate_unique_identifier_for(moodle_question.id, '_item')
       item.status = 'published'
@@ -114,6 +115,9 @@ module Moodle2AA::Learnosity::Converters
       item.tags[MIGRATION_STATUS_TAG_TYPE] = [MIGRATION_STATUS_INITIAL]
       item.tags[IMPORT_STATUS_TAG_TYPE] = [import_status]
       item.tags[MOODLE_QUESTION_TYPE_TAG_TYPE] = moodle_question_type_tag(moodle_question)
+
+      item.tags[DATA_TABLE_SCRIPT_TAG_TYPE] = [data_table_script] unless data_table_script.nil?
+
       extra_tags.each do |type, value|
         item.tags[type] ||= []
         item.tags[type] +=  value

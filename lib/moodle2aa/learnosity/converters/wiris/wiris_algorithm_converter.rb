@@ -1,7 +1,7 @@
 require 'byebug'
 
 module Moodle2AA::Learnosity::Converters::Wiris
-  class WirisAlgorithmConverter
+  module WirisAlgorithmConverter
 
     JS_TEMPLATE = <<~JS
       seed({seed_value})
@@ -17,7 +17,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
       \}
     JS
 
-    def convert_algorithms(question)
+    def self.convert_algorithms(question)
       script = JS_TEMPLATE.dup
       script.gsub!('{seed_value}', rand(10000).to_s)
       script.gsub!('{columns}', question.substitution_variables.to_a.to_s)
@@ -44,7 +44,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
       script
     end
 
-    def format_algorithm(algorithm)
+    def self.format_algorithm(algorithm)
       algorithm.
         gsub(/\/#.+WirisQuizzes.+#\//m, ""). # Remove Wiris starting comment
         gsub(/\/#/, '/*'). # Comments start

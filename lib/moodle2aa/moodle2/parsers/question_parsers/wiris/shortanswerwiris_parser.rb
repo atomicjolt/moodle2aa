@@ -25,10 +25,11 @@ module Moodle2AA::Moodle2
       puts '-----------------------------------'
       puts question.algorithms.join("\n")
 
-      if question.algorithms_format != :none
-        question.answers.each do |answer|
-          next unless answer.answer_text.start_with?('<math')
+      question.answers.each do |answer|
+        if answer.answer_text.start_with?('<math')
           answer.answer_text_plain = convert_math_ml(answer.answer_text)
+        else
+          answer.answer_text_plain = answer.answer_text
         end
       end
 
