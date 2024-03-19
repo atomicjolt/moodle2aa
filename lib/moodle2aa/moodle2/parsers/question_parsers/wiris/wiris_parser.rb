@@ -59,7 +59,7 @@ module Moodle2AA::Moodle2
 
     def get_algorithms_from_sheet(node)
       node.
-        xpath("//task//group/command").
+        xpath("//task//group/command/input").
         children.
         map(&:to_xml).
         map { |input| convert_math_ml(input) }.

@@ -1,8 +1,9 @@
 require 'byebug'
-require_relative './wiris_algorithm_converter'
 
 module Moodle2AA::Learnosity::Converters::Wiris
   class ShortAnswerWirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
+    include WirisHelper
+
     register_converter_type 'shortanswerwiris'
 
     SUBSTITUTION_VARIABLE_REGEX = /#([\w\d]+)\b/
@@ -42,7 +43,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
           if match[1].match(SUBSTITUTION_VARIABLE_REGEX)
             [{
               method: "equivValue",
-              result: match[1].gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}'),
+              value: match[1].gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}'),
               options: {
                 # TODO: we should be able to infer this from the question
                 # however, it might be more effort than it's woth to get
@@ -69,16 +70,14 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       # TODO: don't use the plain text as the template, we should use
       # the provided MathML (with variables swapped out)
-      data[:template] = moodle_question.answers.first.answer_text_plain.
-        gsub(/=(.+)/, '={{response}}').
-        gsub(/\n/, '<br>')
+      data[:template] = convert_fomula_template(moodle_question)
 
       rationale.each { |feedback| data[:is_math] ||= has_math?(feedback) }
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
 
-      js_script, is_valid = WirisAlgorithmConverter.convert_algorithms(moodle_question)
+      script, is_valid = generate_datatable_script(moodle_question)
 
       if !is_valid
         import_status = IMPORT_STATUS_PARTIAL
@@ -89,7 +88,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
                          import_status: import_status,
                          questions: [question],
                          todo: todo,
-                         data_table_script: js_script)
+                         data_table_script: script)
 
       return item, [question]
     end
