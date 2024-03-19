@@ -32,9 +32,20 @@ module Moodle2AA::Moodle2
 
       # Wrapped in a CDATA tag so we need to parse it out
       cas_session_node = Nokogiri::XML(sheet.xpath("question/wirisCasSession").text, &:noblanks)
-      algorithms, algorithms_format = get_algorithms(cas_session_node)
-      algorithms, algorithms_format = get_algorithms_from_sheet(cas_session_node) if algorithms.empty?
+      code_algorithms = get_algorithms(cas_session_node)
+      sheet_algorithms = get_algorithms_from_sheet(cas_session_node)
 
+      algorithms_format = if code_algorithms.length > 0 && sheet_algorithms.length > 0
+                            :both
+                          elsif code_algorithms.length > 0
+                            :code
+                          elsif sheet_algorithms.length > 0
+                            :sheet
+                          else
+                            :none
+                          end
+
+      algorithms = code_algorithms + sheet_algorithms
       [algorithms, algorithms_format]
     end
 
@@ -47,46 +58,40 @@ module Moodle2AA::Moodle2
     end
 
     def get_algorithms(node)
-      algorithms = node.xpath("//algorithm").map(&:text)
-      algorithms_format = :code
-
-      return [[], :none] if algorithms.empty?
-
-      algorithms = algorithms.map do |algorithm|
-        clean_code_string(algorithm)
-      end
-
-      return [algorithms, algorithms_format]
+      node.
+        xpath("//algorithm").
+        map(&:text).
+        map { |text| normalize_script_string(text) }
     end
 
     def get_algorithms_from_sheet(node)
-      inputs = node.xpath("//task//group/command/input").children.map(&:to_xml)
-      # outputs = cas_session_node.xpath("//task//group/command/output").children.map(&:to_xml)
-      if inputs.empty?
-        algorithms = []
-        algorithms_format = :none
-      else
-        algorithms = inputs.map { |input| convert_math_ml(input) }.filter { |input| input != "" }
-        algorithms_format = :mathml
-      end
-
-      [algorithms, algorithms_format]
+      node.
+        xpath("//task//group/command/input").
+        children.
+        map(&:to_xml).
+        map { |input| convert_math_ml(input) }.
+        filter { |input| input != "" }
     end
 
 
     def convert_math_ml(string)
-      clean_code_string(
+      normalize_script_string(
         MathML2AsciiMath.m2a(string).
         gsub(/ +/, ''). # Lot of extra spaces in the output
         gsub(/\\/, ' ') # Non-breaking spaces are being substituted with backslashes for some reason
       )
     end
 
-    def clean_code_string(string)
+    def normalize_script_string(string)
       # Normalizes some different syntaxes to a single syntax
       string.
-        gsub(/\(([^\)]+)\)/) { |match| "(" + match[1..-2].gsub(/(;)|(\.\.)/, ',') + ")" }.
+        # gsub(/\(([^\)]+)\)/) { |match| "(" + match[1..-2].gsub(/(;)|(\.\.)/, ',') + ")" }.
+        gsub(/\((.+)\.\.(.+)\.\.(.+)\)/, "(\\1, \\2, \\3)").
+        gsub(/\((.+)\.\.(.+)\)/, "(\\1, \\2)").
+        gsub(/\((.+);(.+);(.+)\)/, "(\\1, \\2, \\3)").
+        gsub(/\((.+);(.+)\)/, "(\\1, \\2)").
         gsub(':=', '=').
+        gsub('Pi_', 'PI').
         strip
     end
   end

@@ -220,7 +220,8 @@ module MathML2AsciiMath
       sub = parse(node.elements[1])
       sub = "(#{sub})" unless sub.length == 1
       op = parse(node.elements[0]).gsub(/ $/, "")
-      "#{op}_#{sub}"
+      # Turning this into an array index here as I don't have the context to know later
+      "#{op}[#{sub}]"
 
     when "munderover", "msubsup"
       sub = parse(node.elements[1])

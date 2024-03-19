@@ -108,7 +108,9 @@ module Moodle2AA::Learnosity::Converters
                     extra_tags: [],
                     dynamic_content_data: [],
                     data_table_script: nil)
+
       item = Moodle2AA::Learnosity::Models::Item.new
+
       item.reference = generate_unique_identifier_for(moodle_question.id, '_item')
       item.status = 'published'
       item.title = title || moodle_question.name
@@ -116,25 +118,32 @@ module Moodle2AA::Learnosity::Converters
       item.tags[IMPORT_STATUS_TAG_TYPE] = [import_status]
       item.tags[MOODLE_QUESTION_TYPE_TAG_TYPE] = moodle_question_type_tag(moodle_question)
 
-      item.tags[DATA_TABLE_SCRIPT_TAG_TYPE] = [data_table_script] unless data_table_script.nil?
-
       extra_tags.each do |type, value|
         item.tags[type] ||= []
         item.tags[type] +=  value
       end
+
       if todo && todo.length > 0
         item.tags['TODO'] ||= []
         item.tags['TODO'] += todo
         item.tags['TODO'] = item.tags['TODO'].uniq
       end
+
       notes = notes.join("\n") if notes.is_a? Array
       item.note = notes
       item.definition.template = "dynamic"
       item.source = moodle_question_url(moodle_question)
       item.dynamic_content_data = dynamic_content_data
+
       content += features
       content += questions
       content.each {|f| add_content_to_item(item, f)}
+
+      unless data_table_script.nil?
+        item.tags[DATA_TABLE_SCRIPT_TAG_TYPE] = [DATA_TABLE_SCRIPT_TAG_NAME]
+        item.source = data_table_script
+      end
+
       item
     end
 

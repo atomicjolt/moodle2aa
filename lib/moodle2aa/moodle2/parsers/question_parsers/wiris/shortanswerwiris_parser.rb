@@ -1,5 +1,4 @@
 require 'byebug'
-require_relative "./mathml2asciimath"
 
 module Moodle2AA::Moodle2
   class Parsers::QuestionParsers::Wiris::ShortnswerwirisParser < Moodle2AA::Moodle2::Parsers::QuestionParsers::Wiris::QuestionParser
@@ -14,16 +13,7 @@ module Moodle2AA::Moodle2
       question.answers += plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
       question.casesensitive = parse_boolean(plugin_node, 'shortanswer/usecase')
 
-
       question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris')
-
-      byebug if question.algorithms == nil
-
-      puts '-----------------------------------'
-      puts "Name: #{question.name}"
-      puts "Format: #{question.algorithms_format}"
-      puts '-----------------------------------'
-      puts question.algorithms.join("\n")
 
       question.answers.each do |answer|
         if answer.answer_text.start_with?('<math')

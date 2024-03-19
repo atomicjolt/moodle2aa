@@ -14,7 +14,8 @@ module Moodle2AA
     MOODLE_QUESTION_TYPE_TAG_TYPE = "Moodle question type"
     CATEGORY_TAG_TYPE = "category"
 
-    DATA_TABLE_SCRIPT_TAG_TYPE = "data_table_script"
+    DATA_TABLE_SCRIPT_TAG_TYPE = "other"
+    DATA_TABLE_SCRIPT_TAG_NAME = "data_table_script"
 
 
 

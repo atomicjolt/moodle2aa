@@ -10,7 +10,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
       {variable_declarations}
 
 
-      for (var i = 0; i < NUM_ROWS; i++) \{
+      for (var {loop_var} = 0; {loop_var} < NUM_ROWS; {loop_var}++) \{
       {algorithm}
 
         addRow([{row}])
@@ -26,6 +26,12 @@ module Moodle2AA::Learnosity::Converters::Wiris
       script.gsub!('{algorithm}', question.algorithms.map { |a| format_algorithm(a) }.join("\n"))
       script.gsub!('{row}', question.substitution_variables.map { |v| v }.join(','))
 
+      if question.script_variables.include?('i')
+        script.gsub!('{loop_var}', '_rowIndex_')
+      else
+        script.gsub!('{loop_var}', 'i')
+      end
+
       # # Uses prettier to format the script
       # output = IO.popen('prettierd not-real.js', 'r+') do |io|
       #   io.puts(script)
@@ -35,20 +41,25 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       is_valid = !script.include?('//')
 
-      puts '-----------------------------'
-      puts "Question Name: #{question.name}"
+      puts '-----------------------------------'
+      puts "Name: #{question.name}"
+      puts "Format: #{question.algorithms_format}"
       puts "Valid: #{is_valid}"
-      puts '-----------------------------'
+      puts '-----------------------------------'
+      puts question.algorithms.join("\n")
+      puts '-----------------------------------'
       puts script
+      puts '-----------------------------------'
 
-      script
+      [script, is_valid]
     end
 
     def self.format_algorithm(algorithm)
       algorithm.
         gsub(/\/#.+WirisQuizzes.+#\//m, ""). # Remove Wiris starting comment
-        gsub(/\/#/, '/*'). # Comments start
-        gsub(/#\//, '*/'). # Comments end
+        gsub(/\/#/, '/*'). # Multiline Comments start
+        gsub(/#\//, '*/'). # Multiline Comments end
+        gsub(/#/, "//"). # Single line comments
         gsub(/\^/, '**'). # Replace ^ with ** for exponentiation
         gsub('{', '['). # Arays
         gsub('}', ']').

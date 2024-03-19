@@ -32,8 +32,13 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       validation[:scoring_type] = "exactMatch"
 
-      moodle_question.answers.each do |answer|
+      # TODO: We can't just scan for substiution variables, we also need to scan for
+      # literal values that are not substitution variables. IE:
+      # r(s) = #tau <= Substitution variable
+      # r(s) = 1.0 <= Literal value
+      # I figure we can scan for equal signs and then take whats to the right of the equal sign as the value
 
+      moodle_question.answers.each do |answer|
         response = {score: answer.fraction.to_f}
 
         response[:value] = answer.answer_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).map do |match|
@@ -50,6 +55,8 @@ module Moodle2AA::Learnosity::Converters::Wiris
         end
       end
 
+      # TODO: the template doesn't have new lines between responses
+      # Like they typically do in moodle
       data[:template] = moodle_question.answers.first.answer_text_plain.gsub!(SUBSTITUTION_VARIABLE_REGEX, '{{response}}')
 
       # moodle_question.answers.each do |answer|
@@ -93,7 +100,12 @@ module Moodle2AA::Learnosity::Converters::Wiris
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
 
-      js_script = WirisAlgorithmConverter.convert_algorithms(moodle_question)
+      js_script, is_valid = WirisAlgorithmConverter.convert_algorithms(moodle_question)
+
+      if !is_valid
+        import_status = IMPORT_STATUS_PARTIAL
+        todo << "Check Data Table Script"
+      end
 
       item = create_item(moodle_question: moodle_question,
                          import_status: import_status,
