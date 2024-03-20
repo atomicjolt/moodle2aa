@@ -5,7 +5,7 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
     attr_accessor :algorithms
     attr_accessor :algorithms_format
 
-    SUBSTITUTION_VARIABLE_REGEX = /#([\w\d]+)\b/
+    SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)\b/
 
     SCRIPT_VARIABLE_REGEX = /^([\w\d]+)=/
 
@@ -26,7 +26,7 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
         @substitution_variables.merge(answer.answer_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
       end
 
-     @substitution_variables
+      @substitution_variables
     end
 
     def script_variables
@@ -34,7 +34,7 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
 
       @script_variables = Set.new
 
-      algorithms.each do |algorithm|
+      (algorithms || []).each do |algorithm|
         @script_variables.merge(algorithm.scan(SCRIPT_VARIABLE_REGEX).flatten)
       end
 

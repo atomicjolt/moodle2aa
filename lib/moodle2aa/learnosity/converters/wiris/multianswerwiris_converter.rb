@@ -1,11 +1,12 @@
-require 'byebug'
+require "debug"
 
-module Moodle2AA::Learnosity::Converters
-  class MultiAnswerWirisConverter < QuestionConverter
-    # register_converter_type 'multianswerwiris'
+module Moodle2AA::Learnosity::Converters::Wiris
+  class MultiAnswerWirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
+    include WirisHelper
+
+    register_converter_type 'multianswerwiris'
 
     def convert_question(moodle_question)
-
       questions = [] # may have to break into multiple questions
       notes = []
       todo = []
@@ -14,7 +15,7 @@ module Moodle2AA::Learnosity::Converters
       embedded_questions = moodle_question.embedded_questions.clone
       total_parts = embedded_questions.count
 
-      question_text = convert_question_text moodle_question
+      question_text = replace_wiris_variables(convert_question_text(moodle_question))
 
       while true
         if embedded_questions.count == 0
@@ -52,14 +53,15 @@ module Moodle2AA::Learnosity::Converters
           # each part is equal weight
           validation[:valid_response][:score] += 1.0/total_parts
 
-          before, after = question_text.split(/\[response[0-9]+\]/, 2)
+          before, after = question_text.split(/{#\d+}/, 2)
+          binding.break if !after
           abort "missing cloze marker??" if !after
 
           data[:template] += before+"{{response}}"
           question_text = after
 
           case
-          when currenttype == Moodle2AA::Moodle2::Models::Quizzes::MultichoiceQuestion
+          when currenttype == Moodle2AA::Moodle2::Models::Quizzes::Wiris::MultichoiceWirisQuestion
             question.type = data[:type] = "clozedropdown"
             data[:case_sensitive] = true
             data[:ui_style] = {type: "horizontal"}
@@ -67,9 +69,9 @@ module Moodle2AA::Learnosity::Converters
             data[:response_container] = { pointer: "left" }
 
             data[:possible_responses] ||= []
-            data[:possible_responses] << moodle_subquestion.answers.map {|a| convert_answer_text(a)}
+            data[:possible_responses] << moodle_subquestion.answers.map {|a| replace_wiris_variables(convert_answer_text(a))}
             correct = moodle_subquestion.answers.select {|a| a.fraction.to_f == 1}
-            validation[:valid_response][:value] << convert_answer_text(correct[0])
+            validation[:valid_response][:value] << replace_wiris_variables(convert_answer_text(correct[0]))
 
             all = moodle_subquestion.answers.select {|a| a.fraction.to_f > 1}
             if all.count > 1
@@ -79,13 +81,14 @@ module Moodle2AA::Learnosity::Converters
               notes << "This cloze question contained multiple correct answers in Moodle, some of which were not converted automatically."
               import_status = IMPORT_STATUS_MANUAL
             end
-          when currenttype == Moodle2AA::Moodle2::Models::Quizzes::ShortanswerQuestion
+          when currenttype == Moodle2AA::Moodle2::Models::Quizzes::Wiris::ShortAnswerWirisQuestion
             question.type = data[:type] = "clozetext"
             data[:case_sensitive] = moodle_subquestion.casesensitive
 
             correct = moodle_subquestion.answers.select {|a| a.fraction.to_f == 1}
-            validation[:valid_response][:value] << convert_answer_text(correct[0])
-            data[:max_length] = [15, convert_answer_text(correct[0]).length+1].min
+            answer_text = replace_wiris_variables(convert_answer_text(correct[0]))
+            validation[:valid_response][:value] << answer_text
+            data[:max_length] = [15, answer_text.length+1].min
 
             all = moodle_subquestion.answers.select {|a| a.fraction.to_f > 1}
             if all.count > 1
@@ -148,10 +151,20 @@ module Moodle2AA::Learnosity::Converters
               questions.each {|question| question.scale_score(moodle_question.default_mark)}
       questions.each {|question| set_penalty_options(question, moodle_question) }
       questions.each {|question| add_instructor_stimulus(question, moodle_question) }
+
+
+      script, is_valid = generate_datatable_script(moodle_question)
+
+      if !is_valid
+        import_status = IMPORT_STATUS_PARTIAL
+        todo << "Check Data Table Script"
+      end
+
       item = create_item(moodle_question: moodle_question,
                          import_status: import_status,
                          questions: questions,
-                         todo: todo)
+                         todo: todo,
+                         data_table_script: script)
       return item, questions
     end
   end

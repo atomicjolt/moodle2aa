@@ -19,6 +19,7 @@ module Moodle2AA::Moodle2::Models::Quizzes
     require_relative 'quizzes/wiris/wiris_question'
     require_relative 'quizzes/wiris/multianswerwiris_question'
     require_relative 'quizzes/wiris/shortanswerwiris_question'
+    require_relative 'quizzes/wiris/multichoicewiris_question'
   end
 end
 

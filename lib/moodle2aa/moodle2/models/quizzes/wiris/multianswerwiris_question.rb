@@ -26,5 +26,24 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
         @embedded_questions << question if question
       end
     end
+
+
+    def substitution_variables
+      return @substitution_variables if @substitution_variables
+
+      @substitution_variables = super
+
+      embedded_questions.each do |question|
+        question.answers.each do |answer|
+          @substitution_variables.merge(answer.answer_text.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
+        end
+      end
+
+      @substitution_variables
+    end
+
+    def script_variables
+      @script_variables ||= super.merge(embedded_questions.map(&:script_variables).to_set.flatten)
+    end
   end
 end

@@ -6,15 +6,13 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
     register_converter_type 'shortanswerwiris'
 
-    SUBSTITUTION_VARIABLE_REGEX = /#([\w\d]+)\b/
-
     def convert_question(moodle_question)
       question = Moodle2AA::Learnosity::Models::Question.new
       question.reference = generate_unique_identifier_for(moodle_question.id, '_question')
 
       data = question.data
 
-      data[:stimulus] = convert_question_text(moodle_question).gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}')
+      data[:stimulus] = replace_wiris_variables(convert_question_text(moodle_question))
       data[:is_math] = has_math?(data[:stimulus])
       data[:case_sensitive] = moodle_question.casesensitive
       question.type = data[:type] = "clozeformulaV2"
@@ -43,7 +41,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
           if match[1].match(SUBSTITUTION_VARIABLE_REGEX)
             [{
               method: "equivValue",
-              value: match[1].gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}'),
+              value: replace_wiris_variables(match[1]),
               options: {
                 # TODO: we should be able to infer this from the question
                 # however, it might be more effort than it's woth to get

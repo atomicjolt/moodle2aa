@@ -1,6 +1,8 @@
 
 module Moodle2AA::Learnosity::Converters::Wiris
   module WirisHelper
+    SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)\b/
+
     DATA_TABLE_SCRIPT_TEMPLATE = <<~JS
       seed({seed_value})
       setColumns({columns})
@@ -15,7 +17,13 @@ module Moodle2AA::Learnosity::Converters::Wiris
       \}
     JS
 
+    def replace_wiris_variables(text)
+      text.gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}')
+    end
+
     def generate_datatable_script(question)
+      return [nil, true] if question.algorithms_format == :none
+
       script = DATA_TABLE_SCRIPT_TEMPLATE.dup
       script.gsub!('{seed_value}', rand(10000).to_s)
       script.gsub!('{columns}', question.substitution_variables.to_a.to_s)
@@ -39,8 +47,10 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       is_valid = !script.include?('//')
 
+      if question.type == "multianswerwiris"
       puts '-----------------------------------'
       puts "Name: #{question.name}"
+      puts "Type: #{question.type}"
       puts "Format: #{question.algorithms_format}"
       puts "Valid: #{is_valid}"
       puts '-----------------------------------'
@@ -48,6 +58,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
       puts '-----------------------------------'
       puts script
       puts '-----------------------------------'
+      end
 
       [script, is_valid]
     end
@@ -91,10 +102,14 @@ module Moodle2AA::Learnosity::Converters::Wiris
             line = ""
           end
         else
+          # Learnosity MathML doesn't support mfenced
+          # so we replace it with parentheses explicitly
           if node.name == "mfenced"
-            line << "<mo>(</mo>"
+            open = node.attributes["open"]&.value || "("
+            close = node.attributes["close"]&.value || ")"
+            line << "<mo>#{open}</mo>"
             line << node.children.to_xml
-            line << "<mo>)</mo>"
+            line << "<mo>#{close}</mo>"
           else
             line << node.to_xml
           end

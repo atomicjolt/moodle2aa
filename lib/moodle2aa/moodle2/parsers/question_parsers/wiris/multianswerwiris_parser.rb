@@ -15,9 +15,7 @@ module Moodle2AA::Moodle2
         question.embedded_question_references = sequence.text.split(',')
       end
 
-      question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris')
-
-      byebug if question.algorithms == nil
+      question.algorithms, question.algorithms_format = get_code(node, 'multianswerwiris')
 
       question
     end
