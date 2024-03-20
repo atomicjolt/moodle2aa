@@ -47,7 +47,6 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       is_valid = !script.include?('//')
 
-      if question.type == "multianswerwiris"
       puts '-----------------------------------'
       puts "Name: #{question.name}"
       puts "Type: #{question.type}"
@@ -58,7 +57,6 @@ module Moodle2AA::Learnosity::Converters::Wiris
       puts '-----------------------------------'
       puts script
       puts '-----------------------------------'
-      end
 
       [script, is_valid]
     end

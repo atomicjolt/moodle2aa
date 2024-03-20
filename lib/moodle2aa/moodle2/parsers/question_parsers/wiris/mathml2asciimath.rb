@@ -305,7 +305,10 @@ module MathML2AsciiMath
       join_parsed_children(node.children)
 
     when "pi"
-      "PI"
+      "PI_"
+
+    when "exponentiale"
+      "E_"
 
     when "command"
       input = parse(node.children.first)

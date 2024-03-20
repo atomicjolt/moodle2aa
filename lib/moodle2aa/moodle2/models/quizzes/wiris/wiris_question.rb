@@ -26,6 +26,8 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
         @substitution_variables.merge(answer.answer_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
       end
 
+      @substitution_variables.filter! { |v| script_variables.include?(v) }
+
       @substitution_variables
     end
 
