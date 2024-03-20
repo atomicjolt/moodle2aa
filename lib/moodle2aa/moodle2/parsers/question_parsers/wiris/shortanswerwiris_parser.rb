@@ -13,7 +13,7 @@ module Moodle2AA::Moodle2
       question.answers += plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
       question.casesensitive = parse_boolean(plugin_node, 'shortanswer/usecase')
 
-      question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris')
+      question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris', question.id)
 
       question.answers.each do |answer|
         if answer.answer_text.start_with?('<math')

@@ -178,6 +178,8 @@ module MathML2AsciiMath
       return encodechars(HTMLEntities.new.decode(node.text))
     end
 
+    binding.break if node.text == "numerical_solve"
+
     case node.name.sub(/^[^:]*:/, "")
     when "math"
       join_parsed_children(node.elements)

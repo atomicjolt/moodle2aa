@@ -1,4 +1,5 @@
-require 'byebug'
+require 'digest/md5'
+require 'httparty'
 require_relative "./mathml2asciimath"
 
 module Moodle2AA::Moodle2
@@ -19,27 +20,15 @@ module Moodle2AA::Moodle2
       Nokogiri::XML(question_xml.text)
     end
 
-    def get_code(node, type)
+    def get_code(node, type, id)
       sheet = get_wiris_node(node, type)
       return [[], :none] if sheet.nil?
 
-      # Wrapped in a CDATA tag so we need to parse it out
-      cas_session_node = Nokogiri::XML(sheet.xpath("question/wirisCasSession").text, &:noblanks)
-      code_algorithms = get_algorithms(cas_session_node)
-      sheet_algorithms = get_algorithms_from_sheet(cas_session_node)
+      cas_session = sheet.xpath("question/wirisCasSession").text
+      sheet_algorithms = get_algorithm_from_session(id, cas_session)
+      algorithms_format = :sheet
 
-      algorithms_format = if code_algorithms.length > 0 && sheet_algorithms.length > 0
-                            :both
-                          elsif code_algorithms.length > 0
-                            :code
-                          elsif sheet_algorithms.length > 0
-                            :sheet
-                          else
-                            :none
-                          end
-
-      algorithms = code_algorithms + sheet_algorithms
-      [algorithms, algorithms_format]
+      [[sheet_algorithms], algorithms_format]
     end
 
     def get_answers(node, type)
@@ -57,14 +46,35 @@ module Moodle2AA::Moodle2
         map { |text| normalize_script_string(text) }
     end
 
-    def get_algorithms_from_sheet(node)
-      node.
-        xpath("//task//group/command").
-        map(&:to_xml).
-        map { |input| convert_math_ml(input) }.
-        filter { |input| input != "" }
+
+    def get_algorithm_from_session(id, cas_session)
+      cas_session_hash = Digest::MD5.hexdigest(cas_session)
+      filepath = "out/cached_algorithms/#{id}_#{cas_session_hash}"
+
+      if File.exist?(filepath)
+        File.read(filepath)
+      else
+        puts "Fetching algorithm for #{id}"
+        sleep rand(0..5) # Sleep for some random amount to avoid looking like a bot
+        algorithms = convert_sheet_to_algorithm(id, cas_session)
+
+        File.write(filepath, algorithms)
+        algorithms
+      end
     end
 
+    def convert_sheet_to_algorithm(id, cas_session)
+      res = HTTParty.post(
+        'https://calcme.com/session2algorithm?httpstatus=true',
+        body: URI.encode_www_form({data: cas_session})
+      )
+
+      if !res.success?
+        raise "Failed to fetch algorithms for #{id}"
+      end
+
+      res.body
+    end
 
     def convert_math_ml(string)
       normalize_script_string(
