@@ -22,7 +22,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
     end
 
     def generate_datatable_script(question)
-      return [nil, true] if question.algorithms_format == :none
+      return [nil, true] if question.algorithms_format == :none || question.substitution_variables.empty?
 
       script = DATA_TABLE_SCRIPT_TEMPLATE.dup
       script.gsub!('{seed_value}', rand(10000).to_s)
@@ -68,11 +68,19 @@ module Moodle2AA::Learnosity::Converters::Wiris
         gsub(/#\//, '*/'). # Multiline Comments end
         gsub(/#/, "//"). # Single line comments
         gsub(/\^/, '**'). # Replace ^ with ** for exponentiation
-        gsub('{', '['). # Arays
-        gsub('}', ']').
         gsub(/if (.+) then\n/ , "if (\\1) {\n  "). # Replace if statements
         gsub(/else/, '} else {').
         gsub(/end/, '}'). # End of blocks
+        gsub("_calc_approximate(,empty_relation)", ""). # Useless line
+        gsub(/{(.+\,?)+}/, '[\1]'). # Arrays
+        gsub(/\((\w+) subindex_operator\((\w+)\)\)/) { |m| "#{$1}[#{$2} - 1]" }. # Array indexing
+        # The way that elements are being seperated is inconsistent
+        # This normalizes it to be a comma seperated list
+        gsub(/\((.+)\.\.(.+)\.\.(.+)\)/, "(\\1, \\2, \\3)").
+        gsub(/\((.+)\.\.(.+)\)/, "(\\1, \\2)").
+        gsub(/\((.+);(.+);(.+)\)/, "(\\1, \\2, \\3)").
+        gsub(/\((.+);(.+)\)/, "(\\1, \\2)").
+        gsub(":=", "="). # Wiris uses := for assignment without evaluating the right hand side
         split("\n").map { |l| "  #{l}" }.join("\n")
     end
 

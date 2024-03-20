@@ -20,6 +20,14 @@ module Moodle2AA::Moodle2
       Nokogiri::XML(question_xml.text)
     end
 
+    def get_answers(node, type)
+      plugin_node = get_plugin_node(node, type)
+      return [] unless plugin_node
+
+      answer_parser = Parsers::AnswerParser.new
+      plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
+    end
+
     def get_code(node, type, id)
       sheet = get_wiris_node(node, type)
       return [[], :none] if sheet.nil?
@@ -31,22 +39,6 @@ module Moodle2AA::Moodle2
       [[sheet_algorithms], algorithms_format]
     end
 
-    def get_answers(node, type)
-      plugin_node = get_plugin_node(node, type)
-      return [] unless plugin_node
-
-      answer_parser = Parsers::AnswerParser.new
-      plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
-    end
-
-    def get_algorithms(node)
-      node.
-        xpath("//algorithm").
-        map(&:text).
-        map { |text| normalize_script_string(text) }
-    end
-
-
     def get_algorithm_from_session(id, cas_session)
       cas_session_hash = Digest::MD5.hexdigest(cas_session)
       filepath = "out/cached_algorithms/#{id}_#{cas_session_hash}"
@@ -55,7 +47,7 @@ module Moodle2AA::Moodle2
         File.read(filepath)
       else
         puts "Fetching algorithm for #{id}"
-        sleep rand(0..5) # Sleep for some random amount to avoid looking like a bot
+        sleep rand(0..2) # Sleep for a random amount of time to (hopefully) avoid rate limiting
         algorithms = convert_sheet_to_algorithm(id, cas_session)
 
         File.write(filepath, algorithms)
@@ -77,25 +69,9 @@ module Moodle2AA::Moodle2
     end
 
     def convert_math_ml(string)
-      normalize_script_string(
-        MathML2AsciiMath.m2a(string).
+      MathML2AsciiMath.m2a(string).
         gsub(/ +/, ''). # Lot of extra spaces in the output
         gsub(/\\/, ' ') # Non-breaking spaces are being substituted with backslashes for some reason
-      )
-    end
-
-    def normalize_script_string(string)
-      # Normalizes some inconsitenices in the Wiris output
-      string.
-        # The way that elements are being seperated is inconsistent
-        # This normalizes it to be a comma seperated list
-        gsub(/\((.+)\.\.(.+)\.\.(.+)\)/, "(\\1, \\2, \\3)").
-        gsub(/\((.+)\.\.(.+)\)/, "(\\1, \\2)").
-        gsub(/\((.+);(.+);(.+)\)/, "(\\1, \\2, \\3)").
-        gsub(/\((.+);(.+)\)/, "(\\1, \\2)").
-        gsub(':=', '='). # := means assignment but not evaluation, so we'll just use =
-        gsub('Pi_', 'PI'). # The definition for PI is inconsistent
-        strip
     end
   end
 end
