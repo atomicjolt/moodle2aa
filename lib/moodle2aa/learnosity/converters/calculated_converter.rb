@@ -114,7 +114,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       moodle_question.all_answers.each do |answer|
         # TODO: numerical per-response feedback
         answer_text = convert_calculated_answer answer.answer_text, expr_converter, moodle_question
-        options = moodle_question.all_options[answer.id.to_i]
+        options = moodle_question.all_options[answer.id.to_i] || {}
         decimal_places = 10
         if options[:tolerance].to_f != 0
           case options[:tolerancetype].to_i

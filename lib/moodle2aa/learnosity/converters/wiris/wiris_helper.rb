@@ -38,14 +38,9 @@ module Moodle2AA::Learnosity::Converters::Wiris
         script.gsub!('{loop_var}', 'i')
       end
 
-      # # Uses prettier to format the script
-      # output = IO.popen('prettierd not-real.js', 'r+') do |io|
-      #   io.puts(script)
-      #   io.close_write
-      #   io.read
-      # end
+      unsupported_functions = ['solve', 'numerical_solve', 'integrate', "_calc_apply", "wedge_operator"]
 
-      is_valid = !script.include?('//')
+      is_valid = unsupported_functions.none? { |f| script.include?(f) }
 
       puts '-----------------------------------'
       puts "Name: #{question.name}"

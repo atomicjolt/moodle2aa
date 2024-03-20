@@ -157,7 +157,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       if !is_valid
         import_status = IMPORT_STATUS_PARTIAL
-        todo << "Check Data Table Script"
+        todo << "Was unable to generate valid JS. Check Data table Script for best-attempt"
       end
 
       item = create_item(moodle_question: moodle_question,

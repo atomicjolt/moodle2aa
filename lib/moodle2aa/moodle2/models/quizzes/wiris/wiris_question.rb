@@ -40,6 +40,8 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
         @script_variables.merge(algorithm.scan(SCRIPT_VARIABLE_REGEX).flatten)
       end
 
+      @script_variables.filter! { |v| v != "" }
+
       @script_variables
     end
   end
