@@ -24,8 +24,8 @@ module Moodle2AA::Moodle2
       plugin_node = get_plugin_node(node, type)
       return [] unless plugin_node
 
-      answer_parser = Parsers::AnswerParser.new
-      plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
+      parser = Parsers::AnswerParser.new
+      plugin_node.search('answers/answer').map { |n| parser.parse(n) }
     end
 
     def get_code(node, type, id)

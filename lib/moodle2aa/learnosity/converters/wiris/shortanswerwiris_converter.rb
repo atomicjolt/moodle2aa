@@ -1,8 +1,7 @@
 require 'byebug'
 
 module Moodle2AA::Learnosity::Converters::Wiris
-  class ShortAnswerWirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
-    include WirisHelper
+  class ShortAnswerWirisConverter < WirisConverter
 
     register_converter_type 'shortanswerwiris'
 
@@ -12,7 +11,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       data = question.data
 
-      data[:stimulus] = replace_wiris_variables(convert_question_text(moodle_question))
+      data[:stimulus] = convert_question_text(moodle_question)
       data[:is_math] = has_math?(data[:stimulus])
       data[:case_sensitive] = moodle_question.casesensitive
       question.type = data[:type] = "clozeformulaV2"
@@ -31,30 +30,27 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       validation[:scoring_type] = "exactMatch"
 
+      tolerance = get_tolerance(moodle_question)
+
       moodle_question.answers.each do |answer|
         response = {score: answer.fraction.to_f}
 
-        response[:value] = answer.answer_text_plain.scan(/(.+)=(.+)/).map do |match|
-          # If it has substitution variables, we need to convert them to the
-          # Learnosity format & we assume that we should compare by numerical
-          # equivalence. Otherwise, it's a literal value comparison.
-          if match[1].match(SUBSTITUTION_VARIABLE_REGEX)
+        if moodle_question.has_compound_answer
+          lines = answer.answer_text_plain.scan(/(.+)=(.+)$/)
+
+          response[:value] = lines.map do |match|
             [{
               method: "equivValue",
               value: replace_wiris_variables(match[1]),
-              options: {
-                # TODO: we should be able to infer this from the question
-                # however, it might be more effort than it's woth to get
-                # it right, so we'll just assume 2 decimal places for now
-                decimalPlaces: 2,
-              }
-            }]
-          else
-            [{
-                method: "equivLiteral",
-                value: match[1]
+              options: tolerance
             }]
           end
+        else
+          response[:value] = [[{
+            method: "equivValue",
+            value: replace_wiris_variables(answer.answer_text_plain),
+            options: tolerance
+          }]]
         end
 
         rationale << convert_answer_feedback(answer)
@@ -66,9 +62,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
         end
       end
 
-      # TODO: don't use the plain text as the template, we should use
-      # the provided MathML (with variables swapped out)
-      data[:template] = convert_fomula_template(moodle_question)
+      data[:template] = convert_fomula_template(moodle_question, validation[:valid_response][:value].length)
 
       rationale.each { |feedback| data[:is_math] ||= has_math?(feedback) }
       question.scale_score(moodle_question.default_mark)
@@ -89,6 +83,46 @@ module Moodle2AA::Learnosity::Converters::Wiris
                          data_table_script: script)
 
       return item, [question]
+    end
+
+    def get_tolerance(moodle_question)
+      return {} if moodle_question.tolerance.nil?
+
+      if moodle_question.tolerance_digits
+        {
+          decimalPlaces: moodle_question.tolerance,
+        }
+      elsif moodle_question.relative_tolerance
+        {
+          tolerance: '\\percentage',
+          tolerancePercent: moodle_question.tolerance * 100,
+        }
+      else
+        {}
+      end
+    end
+
+    def convert_fomula_template(question, num_responses)
+      return "{{response}}<br>" * num_responses if question.initial_content.nil?
+
+      math_xml = Nokogiri::XML(question.initial_content).root
+
+      return question.initial_content if math_xml.nil?
+
+      lines = []
+      line = ""
+
+      math_xml.children.each do |child|
+        if child.text == "="
+          line << child.to_xml
+          lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> {{response}}"
+          line = ""
+        else
+          line << child.to_xml
+        end
+      end
+
+      lines.join("<br>")
     end
   end
 end

@@ -1,7 +1,10 @@
 
+require 'nokogiri'
+require 'byebug'
+
 module Moodle2AA::Learnosity::Converters::Wiris
-  module WirisHelper
-    SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)\b/
+  class WirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
+    SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)/
 
     DATA_TABLE_SCRIPT_TEMPLATE = <<~JS
       seed({seed_value})
@@ -17,8 +20,22 @@ module Moodle2AA::Learnosity::Converters::Wiris
       \}
     JS
 
+    def convert_question_text(question)
+      text = super.gsub("»", ">").gsub("«", "<").gsub("¨", "\"")
+      text = replace_wiris_variables(text)
+
+      node = Nokogiri::HTML(text)
+
+      node.xpath("//math").each do |math|
+        replacement = replace_variables_in_math_ml(math) { |v| "{{var:#{v}}}" }
+        math.replace(replacement)
+      end
+
+      text
+    end
+
     def replace_wiris_variables(text)
-      text.gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}')
+      text.gsub(SUBSTITUTION_VARIABLE_REGEX, "{{var:\\1}}")
     end
 
     def generate_datatable_script(question)
@@ -38,9 +55,9 @@ module Moodle2AA::Learnosity::Converters::Wiris
         script.gsub!('{loop_var}', 'i')
       end
 
-      unsupported_functions = ['solve', 'numerical_solve', 'integrate', "_calc_apply", "wedge_operator"]
+      unsupported_symbols = ['solve', 'numerical_solve', 'integrate', "_calc_apply", "wedge_operator"]
 
-      is_valid = unsupported_functions.none? { |f| script.include?(f) }
+      is_valid = unsupported_symbols.none? { |f| script.include?(f) }
 
       puts '-----------------------------------'
       puts "Name: #{question.name}"
@@ -76,21 +93,23 @@ module Moodle2AA::Learnosity::Converters::Wiris
         gsub(/\((.+);(.+);(.+)\)/, "(\\1, \\2, \\3)").
         gsub(/\((.+);(.+)\)/, "(\\1, \\2)").
         gsub(":=", "="). # Wiris uses := for assignment without evaluating the right hand side
-        split("\n").map { |l| "  #{l}" }.join("\n")
+        split("\n")
+        .map { |l| "  #{l}" }
+        .join("\n")
     end
 
-    def convert_fomula_template(question)
-      math_xml = Nokogiri::XML(question.answers.first.answer_text).root
-
-      if math_xml.nil?
-        return question.answers.first.answer_text
-      end
+    # This is a really naive approach as it
+    # assumes that the variables are not nested in any way
+    # In practice this isn't ideal, but it's good enough for NJIT's use case
+    def replace_variables_in_math_ml(root)
+      return nil if root.nil?
 
       lines = []
       line = ""
+      variable = ""
       replacing_variable = false
 
-      math_xml.children.each do |node|
+      root.children.each do |node|
         if node.text == "#"
           replacing_variable = true
           next
@@ -99,8 +118,12 @@ module Moodle2AA::Learnosity::Converters::Wiris
         if replacing_variable
           if node.name == "mspace"
             replacing_variable = false
-            lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> {{response}}"
+            val = yield(variable)
+            lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> #{val}"
             line = ""
+            variable = ""
+          else
+            variable << node.text
           end
         else
           # Learnosity MathML doesn't support mfenced
@@ -118,7 +141,8 @@ module Moodle2AA::Learnosity::Converters::Wiris
       end
 
       if line != ""
-        lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> {{response}}"
+        val = yield(variable)
+        lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> #{val}"
       end
 
       lines.join("<br>")

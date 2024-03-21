@@ -41,7 +41,7 @@ module Moodle2AA::Moodle2
       rescue Exception => e
         Moodle2AA::OutputLogger.logger.info e.message
         nil
-        # raise # TODO: Remove this later
+        raise # TODO: Remove this later
       end
     end
 

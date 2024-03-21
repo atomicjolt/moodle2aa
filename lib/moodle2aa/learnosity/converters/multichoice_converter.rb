@@ -1,6 +1,7 @@
 module Moodle2AA::Learnosity::Converters
   class MultiChoiceConverter < QuestionConverter
     register_converter_type 'multichoice'
+    register_converter_type 'multichoicewiris'
 
     def convert_question(moodle_question)
 

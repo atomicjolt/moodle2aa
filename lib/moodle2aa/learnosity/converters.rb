@@ -24,8 +24,7 @@ module Moodle2AA::Learnosity
     require_relative 'converters/gapselect_converter'
 
     module Wiris
-      require_relative 'converters/wiris/wiris_helper'
-      require_relative 'converters/wiris/multichoice_converter'
+      require_relative 'converters/wiris/wiris_converter'
       require_relative 'converters/wiris/shortanswerwiris_converter'
       require_relative 'converters/wiris/multianswerwiris_converter'
     end

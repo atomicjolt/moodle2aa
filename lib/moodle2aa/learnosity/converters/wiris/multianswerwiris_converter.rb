@@ -1,8 +1,7 @@
 require "debug"
 
 module Moodle2AA::Learnosity::Converters::Wiris
-  class MultiAnswerWirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
-    include WirisHelper
+  class MultiAnswerWirisConverter < WirisConverter
 
     register_converter_type 'multianswerwiris'
 
@@ -15,7 +14,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
       embedded_questions = moodle_question.embedded_questions.clone
       total_parts = embedded_questions.count
 
-      question_text = replace_wiris_variables(convert_question_text(moodle_question))
+      question_text = convert_question_text(moodle_question)
 
       while true
         if embedded_questions.count == 0
