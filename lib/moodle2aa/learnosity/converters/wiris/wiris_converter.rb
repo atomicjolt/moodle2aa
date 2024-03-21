@@ -1,6 +1,5 @@
 
 require 'nokogiri'
-require 'byebug'
 
 module Moodle2AA::Learnosity::Converters::Wiris
   class WirisConverter < Moodle2AA::Learnosity::Converters::QuestionConverter
@@ -21,14 +20,22 @@ module Moodle2AA::Learnosity::Converters::Wiris
     JS
 
     def convert_question_text(question)
-      text = super.gsub("»", ">").gsub("«", "<").gsub("¨", "\"")
-      text = replace_wiris_variables(text)
+      text = super
+      text = text.gsub("mathcolor=\"#FF0000\"", "") # Quick hack to stop it from replacing the color
 
       node = Nokogiri::HTML(text)
+      math_nodes = node.xpath("//math")
 
-      node.xpath("//math").each do |math|
-        replacement = replace_variables_in_math_ml(math) { |v| "{{var:#{v}}}" }
-        math.replace(replacement)
+      if math_nodes.empty?
+        # Probably plain-text
+        text = replace_wiris_variables(text)
+      else
+        math_nodes.each do |math|
+          replacement = replace_variables_in_math_ml(math) { |v| "{{var:#{v}}}" }
+          math.replace(replacement)
+        end
+
+        text = node.to_xml
       end
 
       text
@@ -59,16 +66,16 @@ module Moodle2AA::Learnosity::Converters::Wiris
 
       is_valid = unsupported_symbols.none? { |f| script.include?(f) }
 
-      puts '-----------------------------------'
-      puts "Name: #{question.name}"
-      puts "Type: #{question.type}"
-      puts "Format: #{question.algorithms_format}"
-      puts "Valid: #{is_valid}"
-      puts '-----------------------------------'
-      puts question.algorithms.join("\n")
-      puts '-----------------------------------'
-      puts script
-      puts '-----------------------------------'
+      # puts '-----------------------------------'
+      # puts "Name: #{question.name}"
+      # puts "Type: #{question.type}"
+      # puts "Format: #{question.algorithms_format}"
+      # puts "Valid: #{is_valid}"
+      # puts '-----------------------------------'
+      # puts question.algorithms.join("\n")
+      # puts '-----------------------------------'
+      # puts script
+      # puts '-----------------------------------'
 
       [script, is_valid]
     end
@@ -141,8 +148,12 @@ module Moodle2AA::Learnosity::Converters::Wiris
       end
 
       if line != ""
-        val = yield(variable)
-        lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> #{val}"
+        if variable != ""
+          val = yield(variable)
+          lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> #{val}"
+        else
+          lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math>"
+        end
       end
 
       lines.join("<br>")

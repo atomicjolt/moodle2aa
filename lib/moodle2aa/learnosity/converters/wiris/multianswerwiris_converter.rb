@@ -97,27 +97,6 @@ module Moodle2AA::Learnosity::Converters::Wiris
               notes << "This cloze question contained multiple correct answers in Moodle, some of which were not converted automatically."
               import_status = IMPORT_STATUS_MANUAL
             end
-          when currenttype == Moodle2AA::Moodle2::Models::Quizzes::NumericalQuestion
-            question.type = data[:type] = "clozeformula"
-            data[:ui_style] = {type: "no-input-ui"}
-            data[:response_container] = {template: ""}
-
-            correct = moodle_subquestion.answers.select {|a| a.fraction.to_f == 1}
-            tolerance = moodle_subquestion.tolerances[correct[0].id]
-            value = [{method: "equivValue",
-                      value: "#{correct[0].answer_text} \\pm #{tolerance}",
-                      options: { decimalPlaces: 10 }
-                    }]
-            validation[:valid_response][:value] << value
-
-            all = moodle_subquestion.answers.select {|a| a.fraction.to_f > 1}
-            if all.count > 1
-              # We don't convert multiple answers automatically.  It may be possible
-              # manually.
-              todo << "Check cloze conversion"
-              notes << "This cloze question contained multiple correct answers in Moodle, some of which were not converted automatically."
-              import_status = IMPORT_STATUS_MANUAL
-            end
           else
             abort "Unknown subquestion type"
           end

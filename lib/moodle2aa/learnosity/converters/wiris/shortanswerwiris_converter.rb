@@ -103,26 +103,33 @@ module Moodle2AA::Learnosity::Converters::Wiris
     end
 
     def convert_fomula_template(question, num_responses)
-      return "{{response}}<br>" * num_responses if question.initial_content.nil?
+      # I'm not sure why, but whether or not intial content is set is hit or mis
+      if question.initial_content
+        math_xml = Nokogiri::XML(question.initial_content).root
 
-      math_xml = Nokogiri::XML(question.initial_content).root
+        return question.initial_content if math_xml.nil?
 
-      return question.initial_content if math_xml.nil?
+        lines = []
+        line = ""
 
-      lines = []
-      line = ""
-
-      math_xml.children.each do |child|
-        if child.text == "="
-          line << child.to_xml
-          lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> {{response}}"
-          line = ""
-        else
-          line << child.to_xml
+        math_xml.children.each do |child|
+          if child.text == "="
+            line << child.to_xml
+            lines << "<math xmlns=\"http://www.w3.org/1998/Math/MathML\"> #{line} </math> {{response}}"
+            line = ""
+          else
+            line << child.to_xml
+          end
         end
+
+        lines.join("<br>")
+      elsif question.has_compound_answer
+        math_xml = Nokogiri::XML(question.answers.first.answer_text).root
+        replace_variables_in_math_ml(math_xml) { "{{response}}" }
+      else
+        return "{{response}}<br>" * num_responses if question.initial_content.nil?
       end
 
-      lines.join("<br>")
     end
   end
 end
