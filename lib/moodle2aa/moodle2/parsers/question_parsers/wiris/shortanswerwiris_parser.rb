@@ -29,25 +29,8 @@ module Moodle2AA::Moodle2
       end
 
       question.answers.each do |answer|
-        if answer.answer_text.start_with?('<math')
-          answer.answer_text_plain = convert_math_ml(answer.answer_text)
-        else
-          answer.answer_text_plain = answer.answer_text
-        end
+        answer.answer_text_plain = clean_text(answer.answer_text)
       end
-
-      # if input_compound
-      #   grading_scheme = parse_text(question_xml, "//slots/slot/localData/data[@name='gradeCompound']")
-      #   distribution = if grading_scheme == "distribute"
-      #     dist_str = parse_text(question_xml, "//slots/slot/localData/data[@name='gradeCompoundDistribution']")
-      #     dist_str.split(",").map(&:to_i)
-      #   else
-      #     nil
-      #   end
-      # else
-      #   answer_parser = Parsers::AnswerParser.new
-      #   plugin_node.search('answers/answer').map { |n| answer_parser.parse(n) }
-      # end
 
       question
     end

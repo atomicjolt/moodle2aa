@@ -4,6 +4,67 @@ require_relative "./mathml2asciimath"
 
 module Moodle2AA::Moodle2
   class Parsers::QuestionParsers::Wiris::QuestionParser < Moodle2AA::Moodle2::Parsers::QuestionParsers::QuestionParser
+
+    def parse_question(node, questiontype = nil)
+      question = super
+
+      question.question_text_plain = clean_text(question.question_text)
+
+      question
+    end
+
+    def clean_text(text)
+      text = fix_html(text)
+      xml = Nokogiri::XML(text)
+      xml&.root&.text || text
+    end
+
+    def fix_html(content)
+      # learnosity converts font-weight: bold to a nested <strong>, which messes up
+      # table formatting in ece 252
+      content = content.gsub(/(<td[^>]*)font-weight:\s*bold/, "\\1font-weight: 700")
+      # remove text-align on tables, as it breaks the WYSIWYG editor
+      content = content.gsub(/(<table[^>]*)text-align:\s*[a-z]+\s*;?/, "\\1")
+
+      content = content.gsub(/^<p>(.*)<\/p>$/m) do |match|
+        # if no other p tags, strip the outer to match learnosity convention
+        inner = $1
+        if inner.match('<p>')
+          match
+        else
+          inner
+        end
+      end
+
+      # convert mathml
+      lb = "\u00AB"
+      rb = "\u00BB"
+      quote = "\u00A8"
+      singlequote = "\u0060"
+      amp = "\u00A7"
+      re = /  <math[^>]*>.+?<\/math>
+            | #{lb}math[^#{rb}]*#{rb}.+?#{lb}\/math#{rb}
+           /xm
+      content = content.gsub(re) do |match|
+        match.to_s.tr("#{lb}#{rb}#{quote}#{singlequote}#{amp}", "<>\"'&")
+      end
+
+      # convert latex
+      latexre = /<tex(?:\s+alt=["\'](?<e>.*?)["\'])?>(.+?)<\/tex>|\$\$(?<e>.+?)\$\$|\[tex\](?<e>.+?)\[\/tex\]/m
+      content = content.gsub(latexre) do | match|
+        latex=$~[:e]
+        latex = latex.tr("\n"," ")
+        latex = latex.gsub(/\\\((.*?)\\\)/, "\\text{\\1}")
+
+        '\\('+latex+'\\)'
+      end
+
+      # fix mathml empty elements so learnosity doesn't strip them
+      content = content.gsub(/<mrow><\/mrow>/, "<mrow> <\/mrow>")
+      content = content.gsub("<mspace linebreak=\"newline\"/>", "\n")
+      content = content.gsub(/<br.*?>/, "\n")
+    end
+
     def get_plugin_node(node, type)
       node.at_xpath("plugin_qtype_#{type}_question")
     end

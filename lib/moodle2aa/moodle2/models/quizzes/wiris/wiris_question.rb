@@ -18,7 +18,7 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
 
       @substitution_variables = Set.new
 
-      @substitution_variables.merge(question_text.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
+      @substitution_variables.merge(question_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
 
       answers.map do |answer|
         next unless answer.answer_text_plain

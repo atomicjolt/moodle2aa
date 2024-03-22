@@ -26,6 +26,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
       node = Nokogiri::HTML(text)
       math_nodes = node.xpath("//math")
 
+
       if math_nodes.empty?
         # Probably plain-text
         text = replace_wiris_variables(text)

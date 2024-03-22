@@ -17,6 +17,10 @@ module Moodle2AA::Moodle2
 
       question.algorithms, question.algorithms_format = get_code(node, 'multianswerwiris', question.id)
 
+      question.answers.each do |answer|
+        answer.answer_text_plain = clean_text(answer.answer_text)
+      end
+
       question
     end
   end

@@ -2,7 +2,7 @@ module Moodle2AA::Learnosity::Converters
   class HtmlConverter
     include ConverterHelper
 
-    WEB_CONTENT_TOKEN = "__BASE_URI__"
+    WEB_CONTENT_TOKEN = "___EXPORT_ROOT___/assets/"
 
     def initialize(learnosity_files, moodle_course)
       @moodle_course = moodle_course
