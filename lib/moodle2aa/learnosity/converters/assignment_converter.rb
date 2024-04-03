@@ -16,8 +16,10 @@ module Moodle2AA::Learnosity::Converters
       activity.data.config.regions = "main"
       activity.data.config.navigation.show_intro = true
       activity.data.config.navigation.show_outro = true
-      activity.data.config.title = moodle_quiz.name
-      activity.title = moodle_quiz.name
+      title = moodle_quiz.name
+      max_length = [title.length, 149].min
+      activity.data.config.title = title[0..max_length]
+      activity.title = title[0..max_length]
       source = moodle_quiz_url(moodle_quiz)
       # TODO: handle quiz intro
       activity.data.items, question_random_usages = resolve_item_references(moodle_quiz.question_instances, question_categories, moodle_quiz)

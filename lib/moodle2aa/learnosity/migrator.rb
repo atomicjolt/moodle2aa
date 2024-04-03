@@ -229,7 +229,8 @@ module Moodle2AA::Learnosity
       new_question.id = (questions.map { |q| q.id }).join('-')
 
       # save question scores
-      new_question.max_score = []
+      # This was an array before, which didn't make sense.  Now it's a hash.
+      new_question.max_score = {}
       question_ids = questions.map {|q| q.id}
       moodle_quiz.question_instances.each do |instance|
         if question_ids.include? instance[:question]

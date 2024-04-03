@@ -106,14 +106,16 @@ module Moodle2AA::Learnosity::Converters
                     questions: [],
                     content: [],
                     extra_tags: [],
-                    dynamic_content_data: [],
+                    dynamic_content_data: nil,
                     data_table_script: nil)
 
       item = Moodle2AA::Learnosity::Models::Item.new
 
       item.reference = generate_unique_identifier_for(moodle_question.id, '_item')
       item.status = 'published'
-      item.title = title || moodle_question.name
+      title = title || moodle_question.name
+      max_length = [149, title.length].min
+      item.title = title[0..max_length]
       item.tags[MIGRATION_STATUS_TAG_TYPE] = [MIGRATION_STATUS_INITIAL]
       item.tags[IMPORT_STATUS_TAG_TYPE] = [import_status]
       item.tags[MOODLE_QUESTION_TYPE_TAG_TYPE] = moodle_question_type_tag(moodle_question)

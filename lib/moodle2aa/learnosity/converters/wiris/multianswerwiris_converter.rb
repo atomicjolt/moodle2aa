@@ -53,7 +53,6 @@ module Moodle2AA::Learnosity::Converters::Wiris
           validation[:valid_response][:score] += 1.0/total_parts
 
           before, after = question_text.split(/{#\d+}/, 2)
-          binding.break if !after
           abort "missing cloze marker??" if !after
 
           data[:template] += before+"{{response}}"
