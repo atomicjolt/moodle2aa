@@ -113,6 +113,8 @@ module Moodle2AA::Learnosity::Converters
 
       item.reference = generate_unique_identifier_for(moodle_question.id, '_item')
       item.status = 'published'
+      item.source = moodle_question_url(moodle_question)
+
       title = title || moodle_question.name
       max_length = [149, title.length].min
       item.title = title[0..max_length]
@@ -133,18 +135,21 @@ module Moodle2AA::Learnosity::Converters
 
       notes = notes.join("\n") if notes.is_a? Array
       item.note = notes
-      item.definition.template = "dynamic"
-      item.source = moodle_question_url(moodle_question)
-      item.dynamic_content_data = dynamic_content_data
+
+      unless dynamic_content_data.nil?
+        item.definition.template = "dynamic"
+        item.dynamic_content_data = dynamic_content_data
+      end
+
+      unless data_table_script.nil?
+        item.definition.template = "dynamic"
+        item.tags[DATA_TABLE_SCRIPT_TAG_TYPE] = [DATA_TABLE_SCRIPT_TAG_NAME]
+        item.source = data_table_script
+      end
 
       content += features
       content += questions
       content.each {|f| add_content_to_item(item, f)}
-
-      unless data_table_script.nil?
-        item.tags[DATA_TABLE_SCRIPT_TAG_TYPE] = [DATA_TABLE_SCRIPT_TAG_NAME]
-        item.source = data_table_script
-      end
 
       item
     end

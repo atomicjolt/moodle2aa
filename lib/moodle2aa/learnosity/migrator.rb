@@ -26,6 +26,7 @@ module Moodle2AA::Learnosity
       fix_assignment_tags(learnosity.activities, learnosity.items)
       convert_html!(learnosity, moodle_course)
       learnosity.files = remove_unused_files(learnosity.files)
+      filter_items!(learnosity)
       @path = Moodle2AA::Learnosity::Writers::AtomicAssessments.new(learnosity, moodle_course).create(@output_dir) if Moodle2AA::MigrationReport.generate_archive?
     end
 
@@ -343,5 +344,50 @@ module Moodle2AA::Learnosity
       end
     end
 
+    def filter_items!(learnosity)
+      puts "Filtering items"
+      puts "Currently including: #{learnosity.items.count} items and #{learnosity.questions.count} questions."
+      item_references = learnosity.activities.flatten.map do |activity|
+        activity.data.items
+      end.flatten.to_set
+
+      case Moodle2AA::MigrationReport.unused_question_mode
+      when 'exclude'
+        puts "Excluding unused items"
+
+        learnosity.items.select! do |item|
+          item_references.include?(item.reference)
+        end
+
+        question_references = learnosity.items.map do |item|
+          item.questions.map(&:reference)
+        end.flatten.to_set
+
+        learnosity.questions.select! do |question|
+          question_references.include?(question.reference)
+        end
+      when 'only'
+        puts "Including only unused items"
+
+        learnosity.items.reject! do |question|
+          item_references.include?(question.reference)
+        end
+
+        question_references = learnosity.items.map do |item|
+          item.questions.map(&:reference)
+        end.flatten.to_set
+
+        learnosity.questions.select! do |question|
+          question_references.include?(question.reference)
+        end
+
+        # There won't be any activities left since we filter out all their items
+        learnosity.activities = []
+      when 'keep'
+        puts "Keeping all items"
+      end
+
+      puts "Included #{learnosity.items.count} items and #{learnosity.questions.count} questions."
+    end
   end
 end
