@@ -1,3 +1,6 @@
+require 'byebug'
+require_relative "../data_table_engine_script_generator"
+
 module Moodle2AA::Learnosity::Converters
   class ExpressionConverter
     include ConverterHelper
@@ -8,10 +11,13 @@ module Moodle2AA::Learnosity::Converters
       @html_converter = html_converter
       @expressions = {}
 
+      @dte_converter = Moodle2AA::Learnosity::DataTableEngineScriptGenerator.new
+
       # load all variables from question definition
       collect_vars(moodle_question)
       normalize_vars
       shuffle_vars
+      populate_data_table_engine
       #pp @vars
     end
 
@@ -109,6 +115,12 @@ module Moodle2AA::Learnosity::Converters
 
     end
 
+    def populate_data_table_engine
+      @vars.each do |set|
+        @dte_converter.add_dataset(set[:output_name], set[:values])
+      end
+    end
+
     def convert_expression(expr, moodle_question)
       expr = expr.gsub(/&amp;/, '&')
       expr = expr.gsub(/&gt;/, '>')
@@ -127,7 +139,7 @@ module Moodle2AA::Learnosity::Converters
         as_expr = as_var = expr
         warn "Not a moodle expression: #{expr}"
       end
-      #print " Converted #{expr} -> #{as_expr}  ||  #{as_var}\n"
+      # puts " Converted #{expr} -> #{as_expr}  ||  #{as_var}\n"
       [as_expr, as_var]  # as an expression ans as a single (synthetic) variable
     end
 
@@ -147,6 +159,7 @@ module Moodle2AA::Learnosity::Converters
       end
       out
     end
+
     def get_expression_variables
       @expressions
     end
@@ -200,6 +213,7 @@ module Moodle2AA::Learnosity::Converters
         }
         #binding.pry if 50458 == moodle_question.id.to_i
         calculate_data_values expr, format, set, moodle_question
+        @dte_converter.add_answer(output_name, expr)
         # see if this matches any other calculated column and reuse if so
         #@vars.select {|oldset| oldset[:output_name].match(/^#{type}/)}.each do |oldset|
         #  if set[:values].count > 1 && set[:values] == oldset[:values]
@@ -215,7 +229,7 @@ module Moodle2AA::Learnosity::Converters
     end
 
     def calculate_data_values(expr, format, set, moodle_question)
-    #print "Evaluating #{expr}\n"
+      # print "Evaluating #{expr}\n"
       # number of variants = maximum number of values over all variables
       maxcount = (@vars.map { |set| set[:values].count }).max
       maxcount ||= 0
@@ -291,6 +305,10 @@ module Moodle2AA::Learnosity::Converters
         data['rows'][ref] = { 'index' => cnt-1, 'values' => values }
       end
       data
+    end
+
+    def generate_data_table_engine_script
+      @dte_converter.generate
     end
 
     def dump_variables

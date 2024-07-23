@@ -114,13 +114,11 @@ module Moodle2AA::Learnosity::Converters
     end
 
     def evaluate(expr,format)
-
       expr = _replace_vars expr
       expr = _fix_expression expr
       #puts "Evaluate #{expr} => #{new}"
 
       # We should really do some sanitation, but leaving as an eval for now
-
 
       result = nil
       begin
