@@ -454,6 +454,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
                          content: content,
                          extra_tags: extra_tags,
                          dynamic_content_data: expr_converter.generate_dynamic_content_data,
+                         data_table_script: expr_converter.generate_data_table_engine_script,
                          todo: todo)
 
       #if expr_converter.has_truncated_rows?
