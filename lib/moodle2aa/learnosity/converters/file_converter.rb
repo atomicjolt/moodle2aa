@@ -1,7 +1,7 @@
 module Moodle2AA::Learnosity::Converters
   class FileConverter
     include ConverterHelper
-    
+
     def initialize(moodle_course)
       @moodle_course = moodle_course
     end

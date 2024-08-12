@@ -1,6 +1,7 @@
 module Moodle2AA::Learnosity::Converters
   class EssayConverter < QuestionConverter
     register_converter_type 'essay'
+    register_converter_type 'essaywiris'
 
     def convert_question(moodle_question)
 
@@ -37,7 +38,7 @@ module Moodle2AA::Learnosity::Converters
       data['show_word_limit'] = "off"
       data['show_word_count'] = false
 
-      data['ui_style'] = { 
+      data['ui_style'] = {
         min_height: "#{moodle_question.responsefieldlines.to_i*20}px"  # ~ 20 px per line
       }
       data[:validation] = {
@@ -55,7 +56,7 @@ module Moodle2AA::Learnosity::Converters
 
       question.scale_score(moodle_question.default_mark)
       questions << question
-      
+
       if moodle_question.attachments.to_i != 0
         # add file upload question
         question = Moodle2AA::Learnosity::Models::Question.new
@@ -80,18 +81,18 @@ module Moodle2AA::Learnosity::Converters
         data[:allow_ms_word] = true
         data[:allow_ms_excel] = true
         data[:allow_open_office] = true
-        
+
         data[:validation] = {
           max_score: 0  # I guess let the essay component have the score
         }
 
         questions << question
       end
-      
+
       if moodle_question.responseformat == "noinline" && questions.count == 2
         # noinline means no essay, so copy the important parts
         # and remove the essay
-        
+
         upload = questions[1]
         essay = questions[0]
 
@@ -105,7 +106,7 @@ module Moodle2AA::Learnosity::Converters
       # no penalties / multiple tries
       #set_penalty_options(question, moodle_question)
       questions.each {|question| add_instructor_stimulus(question, moodle_question) }
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: IMPORT_STATUS_COMPLETE,
                          questions: questions)
       return item, questions

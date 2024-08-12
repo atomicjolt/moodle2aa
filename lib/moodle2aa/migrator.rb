@@ -16,7 +16,7 @@ module Moodle2AA
       Moodle2AA::MigrationReport.siteurl = options['siteurl'] || ''
       Moodle2AA::MigrationReport.options = options
       Moodle2AA::MigrationReport.source = @source
-      raise(Moodle2AA::Error, "'#{@source}' does not exist") unless File.exists?(@source)
+      raise(Moodle2AA::Error, "'#{@source}' does not exist") unless File.exist?(@source)
       raise(Moodle2AA::Error, "'#{@destination}' is not a directory") unless File.directory?(@destination)
       raise(Moodle2AA::Error, "'#{@format}' is not a valid format. Please use 'cc' or 'canvas'.") unless ['cc', 'canvas'].include?(@format)
       @converter_class = @format == 'cc' ? Moodle2AA::CC::Converter : Moodle2AA::Canvas::Converter
@@ -58,9 +58,9 @@ module Moodle2AA
 
     def moodle_version
       if File.directory?(@source)
-        if File.exists?(File.join(@source, 'moodle_backup.xml'))
+        if File.exist?(File.join(@source, 'moodle_backup.xml'))
           MOODLE_2
-        elsif File.exists?(File.join(@source, 'moodle.xml'))
+        elsif File.exist?(File.join(@source, 'moodle.xml'))
           MOODLE_1_9
         end
       else

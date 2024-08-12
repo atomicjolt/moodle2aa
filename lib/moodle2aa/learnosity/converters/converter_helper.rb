@@ -1,6 +1,6 @@
 module Moodle2AA
   module Learnosity::Converters::ConverterHelper
-    
+
     # Migration status values, for "Migration status" tag
     IMPORT_STATUS_TAG_TYPE = "Import status"
     IMPORT_STATUS_BAD = "Incomplete"
@@ -10,9 +10,12 @@ module Moodle2AA
 
     MIGRATION_STATUS_TAG_TYPE = "Migration status"
     MIGRATION_STATUS_INITIAL = "Not started"
-    
+
     MOODLE_QUESTION_TYPE_TAG_TYPE = "Moodle question type"
     CATEGORY_TAG_TYPE = "category"
+
+    DATA_TABLE_SCRIPT_TAG_TYPE = "other"
+    DATA_TABLE_SCRIPT_TAG_NAME = "data_table_script"
 
 
 
@@ -97,14 +100,14 @@ module Moodle2AA
 
     # get single tag for category
     def get_tag_for_category(category, categories, recursive)
-      cats = get_parent_categories(category, categories) 
+      cats = get_parent_categories(category, categories)
       format_category_tag(cats, recursive)
-    end 
+    end
 
     # get all tags for questions in a category.  Includes the category tag,
     # along with any needed by recursive random questions.
     def get_tags_for_category(category, categories)
-      cats = get_parent_categories(category, categories) 
+      cats = get_parent_categories(category, categories)
       # join into a single tag
       tags = [format_category_tag(cats, false)]
       # look for any recursive random questions
@@ -118,7 +121,7 @@ module Moodle2AA
       end
       is_random_category = needs_extra_tag || category.questions.find { |q| q.type == "random" }
       return tags, is_random_category
-    end 
+    end
 
     def format_category_tag(cats, recursive)
       # remove "default for" components

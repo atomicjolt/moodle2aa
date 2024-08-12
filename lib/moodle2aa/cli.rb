@@ -8,10 +8,11 @@ module Moodle2AA
       method_option :format,                     :type => :string,  :default => 'cc'
       method_option :generate_archive,           :type => :boolean, :default => true
       method_option :generate_report,            :type => :boolean, :default => false
-      method_option :version,                    :type => :string, :default =>  ''
+      method_option :version,                    :type => :string,  :default =>  ''
       method_option :convert_unknown_qtypes,     :type => :boolean, :default => true
       method_option :convert_unknown_activities, :type => :boolean, :default => true
-      method_option :group_by_quiz_page, :type => :boolean, :default => true
+      method_option :group_by_quiz_page,         :type => :boolean, :default => true
+      method_option :unused_question_mode,       :type => :string,  :default => 'keep', :enum => ['exclude', 'keep', 'only']
     end
 
     desc "migrate MOODLE_BACKUP_ZIP EXPORT_DIR", "Migrates Moodle backup ZIP to IMS Common Cartridge package"
@@ -59,16 +60,16 @@ module Moodle2AA
         next unless File.directory? source_folder
         numbackups += Pathname.new(source_folder).children.select { |child| child.directory? }.size
       end
-      bar = ProgressBar.new(numbackups)
+      # bar = ProgressBar.new(numbackups)
 
       sources.each do |source_folder|
         next unless File.directory? source_folder
-        Pathname.new(source_folder).children.select { |child| child.directory? }.collect { |backup|
+        Pathname.new(source_folder).children.collect { |backup|
           puts "Converting #{backup}"
           migrator = Moodle2AA::Migrator.new backup, destination, options
           migrator.migrate
           #puts "#{backup} converted to #{migrator.imscc_path}" if options[:generate_archive]
-          bar.increment!
+          # bar.increment!
         }
       end
     end

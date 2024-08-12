@@ -2,6 +2,8 @@ module Moodle2AA::Moodle2Converter
   module QuestionConverters
     class TrueFalseConverter < QuestionConverter
       register_converter_type 'truefalse'
+      register_converter_type 'truefalsewiris'
+
       self.canvas_question_type = 'true_false_question'
 
       def convert_question(moodle_question)
