@@ -505,7 +505,6 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
 
       format = "%"+separator+lengthint+'.'+lengthfrac+base
       as_expr, as_var = expr_converter.convert_answer(text, format, moodle_question)
-      byebug
 
       prefix = "0"+base
       # primary answer is with or without prefix, depending on use_prefix
