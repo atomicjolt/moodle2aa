@@ -1,6 +1,6 @@
 require 'digest/md5'
 require 'httparty'
-require_relative "./mathml2asciimath"
+require "byebug"
 
 module Moodle2AA::Moodle2
   class Parsers::QuestionParsers::Wiris::QuestionParser < Moodle2AA::Moodle2::Parsers::QuestionParsers::QuestionParser
@@ -15,8 +15,8 @@ module Moodle2AA::Moodle2
 
     def clean_text(text)
       text = fix_html(text)
-      xml = Nokogiri::XML(text)
-      xml&.root&.text || text
+      html = Nokogiri::HTML(text)
+      html&.root&.text || text
     end
 
     def fix_html(content)
