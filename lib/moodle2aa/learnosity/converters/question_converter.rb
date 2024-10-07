@@ -114,6 +114,8 @@ module Moodle2AA::Learnosity::Converters
       item.reference = generate_unique_identifier_for(moodle_question.id, '_item')
       item.status = 'published'
       item.source = moodle_question_url(moodle_question)
+      item.metadata ||= {}
+      item.metadata[:moodle_question_id] = moodle_question.id
 
       title = title || moodle_question.name
       max_length = [149, title.length].min

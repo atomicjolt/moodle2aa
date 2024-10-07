@@ -27,7 +27,11 @@ module Moodle2AA::Learnosity
       convert_html!(learnosity, moodle_course)
       learnosity.files = remove_unused_files(learnosity.files)
       filter_items!(learnosity)
-      @path = Moodle2AA::Learnosity::Writers::AtomicAssessments.new(learnosity, moodle_course).create(@output_dir) if Moodle2AA::MigrationReport.generate_archive?
+      if Moodle2AA::MigrationReport.generate_archive?
+        # writer = Moodle2AA::Learnosity::Writers::AtomicAssessments.new(learnosity, moodle_course)
+        writer = Moodle2AA::Learnosity::Writers::Json.new(learnosity, moodle_course)
+        @path = writer.create(@output_dir)
+      end
     end
 
     private
