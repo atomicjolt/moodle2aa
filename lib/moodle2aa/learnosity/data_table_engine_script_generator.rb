@@ -32,7 +32,7 @@ class Moodle2AA::Learnosity::DataTableEngineScriptGenerator
     script.gsub!('{dataset_declarations}', dataset_declarations)
     script.gsub!('{variable_declarations}', variable_declarations)
     script.gsub!('{algorithm}', format_body)
-    script.gsub!('{row}', @output_variables.join(','))
+    script.gsub!('{row}', @output_variables.map { |o| "format(#{o})" }.join(','))
     script.gsub!('{loop_var}', 'i')
 
     script

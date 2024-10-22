@@ -8,7 +8,18 @@ module Moodle2AA::Moodle2
     def parse_question(node, questiontype = nil)
       question = super
 
+      question.answers = get_answers(node, 'shortanswerwiris')
+
+      question.answers.each do |answer|
+        answer.answer_text_plain = clean_text(answer.answer_text)
+      end
+
       question.question_text_plain = clean_text(question.question_text)
+
+      cas_session = get_cas_session(node, question.type)
+      if cas_session
+        question.precision = parse_number(cas_session, "/wiriscalc/properties/property[@name='precision']")
+      end
 
       question
     end
@@ -81,6 +92,16 @@ module Moodle2AA::Moodle2
       Nokogiri::XML(question_xml.text)
     end
 
+    def get_cas_session(node, type)
+      wiris_node = get_wiris_node(node, type)
+      return nil unless wiris_node
+
+      text = wiris_node.xpath("//wirisCasSession")&.text
+      return nil if text.empty?
+
+      Nokogiri::XML(text)
+    end
+
     def get_answers(node, type)
       plugin_node = get_plugin_node(node, type)
       return [] unless plugin_node
@@ -127,12 +148,6 @@ module Moodle2AA::Moodle2
       end
 
       res.body
-    end
-
-    def convert_math_ml(string)
-      MathML2AsciiMath.m2a(string).
-        gsub(/ +/, ''). # Lot of extra spaces in the output
-        gsub(/\\/, ' ') # Non-breaking spaces are being substituted with backslashes for some reason
     end
   end
 end

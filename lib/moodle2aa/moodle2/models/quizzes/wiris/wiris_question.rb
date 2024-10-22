@@ -2,7 +2,7 @@ require "byebug"
 
 module Moodle2AA::Moodle2::Models::Quizzes::Wiris
   class WirisQuestion < Moodle2AA::Moodle2::Models::Quizzes::Question
-    attr_accessor :algorithms, :algorithms_format, :has_compound_answer, :initial_content, :tolerance, :relative_tolerance, :tolerance_digits
+    attr_accessor :algorithms, :algorithms_format, :has_compound_answer, :initial_content, :tolerance, :relative_tolerance, :tolerance_digits, :precision
 
     SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)\b/
 

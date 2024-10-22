@@ -116,6 +116,8 @@ module Moodle2AA::Learnosity::Converters
       item.source = moodle_question_url(moodle_question)
       item.metadata ||= {}
       item.metadata[:moodle_question_id] = moodle_question.id
+      item.metadata[:moodle_question_type] = moodle_question.qtype
+      item.metadata[:moodle_question_url] = moodle_question_url(moodle_question)
 
       title = title || moodle_question.name
       max_length = [149, title.length].min

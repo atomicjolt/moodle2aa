@@ -31,6 +31,7 @@ module Moodle2AA
           migrate_moodle_2
       end
     rescue StandardError => error
+      raise
       @last_error = error
       Moodle2AA::Logger.add_warning 'error migrating content', error
     end

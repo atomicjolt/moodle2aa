@@ -18,7 +18,7 @@ module Moodle2AA::Learnosity::Models
       if !data[:validation]
         return #nothing to do
       end
-      max_score = max_score.to_f 
+      max_score = max_score.to_f
       _scale_score(max_score)
     end
 

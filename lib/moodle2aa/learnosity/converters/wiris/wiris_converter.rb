@@ -6,6 +6,7 @@ module Moodle2AA::Learnosity::Converters::Wiris
     SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)/
 
     DATA_TABLE_SCRIPT_TEMPLATE = <<~JS
+      var PRECISION = {precision}
       seed({seed_value})
       setColumns({columns})
 
@@ -50,12 +51,13 @@ module Moodle2AA::Learnosity::Converters::Wiris
       return [nil, true] if question.algorithms_format == :none || question.substitution_variables.empty?
 
       script = DATA_TABLE_SCRIPT_TEMPLATE.dup
+      script.gsub!('{precision}', (question.precision || 15).to_i.to_s)
       script.gsub!('{seed_value}', rand(10000).to_s)
       script.gsub!('{columns}', question.substitution_variables.to_a.to_s)
       script.gsub!('{variable_declarations}', question.script_variables.map { |v| "var #{v};" }.join("\n"))
 
       script.gsub!('{algorithm}', question.algorithms.map { |a| format_algorithm(a) }.join("\n"))
-      script.gsub!('{row}', question.substitution_variables.map { |v| v }.join(','))
+      script.gsub!('{row}', question.substitution_variables.map { |v| "format(#{v}, { precision: PRECISION })" }.join(','))
 
       if question.script_variables.include?('i')
         script.gsub!('{loop_var}', '_rowIndex_')
@@ -63,20 +65,20 @@ module Moodle2AA::Learnosity::Converters::Wiris
         script.gsub!('{loop_var}', 'i')
       end
 
-      unsupported_symbols = ['solve', 'numerical_solve', 'integrate', "_calc_apply", "wedge_operator"]
+      unsupported_symbols = ['solve', 'numerical_solve', 'integrate', "_calc_apply", "wedge_operator", "_calc_plot"]
 
       is_valid = unsupported_symbols.none? { |f| script.include?(f) }
 
-      # puts '-----------------------------------'
-      # puts "Name: #{question.name}"
-      # puts "Type: #{question.type}"
-      # puts "Format: #{question.algorithms_format}"
-      # puts "Valid: #{is_valid}"
-      # puts '-----------------------------------'
-      # puts question.algorithms.join("\n")
-      # puts '-----------------------------------'
-      # puts script
-      # puts '-----------------------------------'
+      puts '-----------------------------------'
+      puts "Name: #{question.name}"
+      puts "Type: #{question.type}"
+      puts "Format: #{question.algorithms_format}"
+      puts "Valid: #{is_valid}"
+      puts '-----------------------------------'
+      puts question.algorithms.join("\n")
+      puts '-----------------------------------'
+      puts script
+      puts '-----------------------------------'
 
       [script, is_valid]
     end
@@ -93,13 +95,15 @@ module Moodle2AA::Learnosity::Converters::Wiris
         gsub(/end/, '}'). # End of blocks
         gsub("_calc_approximate(,empty_relation)", ""). # Useless line
         gsub(/{(.+\,?)+}/, '[\1]'). # Arrays
-        gsub(/\((\w+) subindex_operator\((\w+)\)\)/) { |m| "#{$1}[#{$2} - 1]" }. # Array indexing
+        gsub(/\((\w+) subindex_operator\((.+)\)\)/) { |m| "#{$1}[#{$2} - 1]" }. # Array indexing
+        # gsub(/wedge_operator/, '&&'). # Logical AND
         # The way that elements are being seperated is inconsistent
         # This normalizes it to be a comma seperated list
         gsub(/\((.+)\.\.(.+)\.\.(.+)\)/, "(\\1, \\2, \\3)").
         gsub(/\((.+)\.\.(.+)\)/, "(\\1, \\2)").
         gsub(/\((.+);(.+);(.+)\)/, "(\\1, \\2, \\3)").
         gsub(/\((.+);(.+)\)/, "(\\1, \\2)").
+        gsub(/_calc_approximate\((.+),empty_relation\)/, "\\1"). # stips _calc_approximate function calls, returns the inner value
         gsub(":=", "="). # Wiris uses := for assignment without evaluating the right hand side
         split("\n")
         .map { |l| "  #{l}" }

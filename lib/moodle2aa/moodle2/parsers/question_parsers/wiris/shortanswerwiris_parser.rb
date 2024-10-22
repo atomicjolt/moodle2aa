@@ -10,7 +10,6 @@ module Moodle2AA::Moodle2
       plugin_node = get_plugin_node(node, 'shortanswerwiris')
       question_xml = get_wiris_node(node, 'shortanswerwiris')
 
-      question.answers = get_answers(node, 'shortanswerwiris')
       question.casesensitive = parse_boolean(plugin_node, 'shortanswer/usecase')
       question.algorithms, question.algorithms_format = get_code(node, 'shortanswerwiris', question.id)
 
@@ -26,10 +25,6 @@ module Moodle2AA::Moodle2
       else
         question.has_compound_answer = false
         question.initial_content = nil
-      end
-
-      question.answers.each do |answer|
-        answer.answer_text_plain = clean_text(answer.answer_text)
       end
 
       question
