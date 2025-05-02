@@ -8,7 +8,7 @@ module Moodle2AA::Moodle2
     def parse_question(node, questiontype = nil)
       question = super
 
-      question.answers = get_answers(node, 'shortanswerwiris')
+      question.answers = get_answers(node, question.type)
 
       question.answers.each do |answer|
         answer.answer_text_plain = clean_text(answer.answer_text)
@@ -115,6 +115,8 @@ module Moodle2AA::Moodle2
       return [[], :none] if sheet.nil?
 
       cas_session = sheet.xpath("question/wirisCasSession").text
+      return [[], :none]  if cas_session.empty?
+
       sheet_algorithms = get_algorithm_from_session(id, cas_session)
       algorithms_format = :sheet
 
@@ -123,7 +125,7 @@ module Moodle2AA::Moodle2
 
     def get_algorithm_from_session(id, cas_session)
       cas_session_hash = Digest::MD5.hexdigest(cas_session)
-      filepath = "out/cached_algorithms/#{id}_#{cas_session_hash}"
+      filepath = "out/njit/cached_algorithms/#{id}_#{cas_session_hash}"
 
       if File.exist?(filepath)
         File.read(filepath)

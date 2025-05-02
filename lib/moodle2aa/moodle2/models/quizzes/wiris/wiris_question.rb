@@ -2,14 +2,14 @@ require "byebug"
 
 module Moodle2AA::Moodle2::Models::Quizzes::Wiris
   class WirisQuestion < Moodle2AA::Moodle2::Models::Quizzes::Question
-    attr_accessor :algorithms, :algorithms_format, :has_compound_answer, :initial_content, :tolerance, :relative_tolerance, :tolerance_digits, :precision
+    attr_accessor :algorithms, :algorithms_format, :has_compound_answer, :initial_content, :tolerance, :relative_tolerance, :tolerance_digits, :precision, :grade_compound
 
     SUBSTITUTION_VARIABLE_REGEX = /#([\D][\w\d]*)\b/
 
-    SCRIPT_VARIABLE_REGEX = /\s*([\w\d]+)? =/
+    SCRIPT_VARIABLE_REGEX = /\s*([\w\d]+)?\s?=/
 
     def learnosity_question_text
-      learnosity_question_text = question_text.gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}')
+      @learnosity_question_text ||= question_text.gsub(SUBSTITUTION_VARIABLE_REGEX, '{{var:\1}}')
     end
 
     # Variables can be in: question_text, answers[*].answer_text,
@@ -20,7 +20,7 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
 
       @substitution_variables.merge(question_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
 
-      answers.map do |answer|
+      answers.each do |answer|
         next unless answer.answer_text_plain
         @substitution_variables.merge(answer.answer_text_plain.scan(SUBSTITUTION_VARIABLE_REGEX).flatten)
       end
@@ -39,7 +39,7 @@ module Moodle2AA::Moodle2::Models::Quizzes::Wiris
         @script_variables.merge(algorithm.scan(SCRIPT_VARIABLE_REGEX).flatten)
       end
 
-      @script_variables.filter! { |v| v != "" }
+      @script_variables.filter! { |v| v != "" && !v.nil? }
 
       @script_variables
     end

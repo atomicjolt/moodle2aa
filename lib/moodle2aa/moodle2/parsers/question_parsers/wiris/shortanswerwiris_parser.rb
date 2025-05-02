@@ -18,6 +18,11 @@ module Moodle2AA::Moodle2
         question.relative_tolerance = parse_boolean(question_xml, 'options/option[@name="relative_tolerance"]')
         question.tolerance_digits = parse_boolean(question_xml, 'options/option[@name="tolerance_digits"]')
 
+        # Defines how multi-part answers are graded
+        # - 'distribute' - Grade each part separately
+        # - 'and' - Grade the whole answer as one
+        question.grade_compound = parse_text(question_xml, '//localData/data[@name="gradeCompound"]')
+
         # In Compound answers, there's only one answer object, but it has multiple parts, we need to split it apart
         question.has_compound_answer = parse_boolean(question_xml, "//localData/data[@name='inputCompound']")
         question.initial_content = question_xml.at_xpath("//initialContent")&.children&.first&.text

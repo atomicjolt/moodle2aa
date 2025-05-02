@@ -28,7 +28,11 @@ module Moodle2AA::Learnosity::Converters::Wiris
       import_status = IMPORT_STATUS_COMPLETE
       todo = []
 
-      validation[:scoring_type] = "exactMatch"
+      if moodle_question.grade_compound == "distribute"
+        validation[:scoring_type] = "partialMatchV2"
+      else
+        validation[:scoring_type] = "exactMatch"
+      end
 
       tolerance = get_tolerance(moodle_question)
 

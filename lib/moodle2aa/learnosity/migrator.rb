@@ -28,8 +28,8 @@ module Moodle2AA::Learnosity
       learnosity.files = remove_unused_files(learnosity.files)
       filter_items!(learnosity)
       if Moodle2AA::MigrationReport.generate_archive?
-        # writer = Moodle2AA::Learnosity::Writers::AtomicAssessments.new(learnosity, moodle_course)
-        writer = Moodle2AA::Learnosity::Writers::Json.new(learnosity, moodle_course)
+        writer = Moodle2AA::Learnosity::Writers::AtomicAssessments.new(learnosity, moodle_course)
+        # writer = Moodle2AA::Learnosity::Writers::Json.new(learnosity, moodle_course)
         @path = writer.create(@output_dir)
       end
     end
