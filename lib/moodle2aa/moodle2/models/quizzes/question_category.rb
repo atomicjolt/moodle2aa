@@ -10,7 +10,7 @@ module Moodle2AA::Moodle2::Models::Quizzes
     end
 
     def resolve_embedded_question_references(question_categories)
-      @questions.select{|q| q.is_a?(MultianswerQuestion)}.each do |q|
+      @questions.select{|q| q.respond_to?(:resolve_embedded_question_references) }.each do |q|
         q.resolve_embedded_question_references(question_categories)
       end
     end

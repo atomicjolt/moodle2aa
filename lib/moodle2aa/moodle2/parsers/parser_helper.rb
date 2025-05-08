@@ -30,6 +30,11 @@ module Moodle2AA::Moodle2::Parsers
       value && (value == '1' || value.downcase == 'true' || value.downcase == 'y') ? true : false
     end
 
+    def parse_number(node, xpath)
+      value = parse_text(node, xpath)
+      value && value.to_f
+    end
+
     def parse_module(activity_dir, activity)
       File.open(File.join(activity_dir, MODULE_XML)) do |f|
         xml = Nokogiri::XML(f)

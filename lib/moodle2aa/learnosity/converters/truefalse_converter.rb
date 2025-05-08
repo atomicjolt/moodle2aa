@@ -1,6 +1,7 @@
 module Moodle2AA::Learnosity::Converters
   class TrueFalseConverter < QuestionConverter
     register_converter_type 'truefalse'
+    register_converter_type 'truefalsewiris'
 
     def convert_question(moodle_question)
 
@@ -14,15 +15,15 @@ module Moodle2AA::Learnosity::Converters
       data[:instantfeedback] = true
       question.type = data[:type] = "mcq"
       data[:ui_style] = {type: "horizontal"}
-      
+
       options = data[:options] = []
       validation = data[:validation] = {}
       validation[:scoring_type] = "exactMatch"
-      
+
       data[:metadata] = {}
       data[:metadata].merge!(convert_feedback( moodle_question ))
       data[:is_math] ||= has_math?(data[:metadata])
-      
+
       value = 0;
       moodle_question.answers.each do |answer|
         options << {label: convert_answer_text(answer),
@@ -39,7 +40,7 @@ module Moodle2AA::Learnosity::Converters
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: IMPORT_STATUS_COMPLETE,
                          questions: [question])
       return item, [question]

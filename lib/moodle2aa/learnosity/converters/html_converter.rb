@@ -2,7 +2,7 @@ module Moodle2AA::Learnosity::Converters
   class HtmlConverter
     include ConverterHelper
 
-    WEB_CONTENT_TOKEN = "__BASE_URI__"
+    WEB_CONTENT_TOKEN = "___EXPORT_ROOT___/assets/"
 
     def initialize(learnosity_files, moodle_course)
       @moodle_course = moodle_course
@@ -26,9 +26,9 @@ module Moodle2AA::Learnosity::Converters
       #content = content.gsub("@", '&#64;');
       content
     end
-    
+
     def fix_html(content)
-      # learnosity converts font-weight: bold to a nested <strong>, which messes up 
+      # learnosity converts font-weight: bold to a nested <strong>, which messes up
       # table formatting in ece 252
       content = content.gsub(/(<td[^>]*)font-weight:\s*bold/, "\\1font-weight: 700")
       # remove text-align on tables, as it breaks the WYSIWYG editor
@@ -103,7 +103,7 @@ module Moodle2AA::Learnosity::Converters
     end
 
     def file_link(moodle_path, component=nil, file_area=nil, item_id=nil)
-      moodle_path = CGI::unescape(moodle_path)
+      moodle_path = CGI::unescape(URI(moodle_path).path)
       cc_file = @learnosity_files.find do |file|
         result = moodle_path == file.file_path
         if component

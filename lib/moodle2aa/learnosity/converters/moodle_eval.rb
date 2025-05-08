@@ -1,5 +1,5 @@
 # bitwise ops on floats, like in php :)
-class Float 
+class Float
   def &(b)
     (self.to_i & b.to_i).to_f
   end
@@ -59,7 +59,7 @@ module Moodle2AA::Learnosity::Converters
     end
 
     def _fix_expression(expr)
-      
+
       # deal with php falsy values and ? :
       out = expr
       i = 0
@@ -68,7 +68,7 @@ module Moodle2AA::Learnosity::Converters
         if out[i] == '?'
           j = i-1
           level = 0
-          while j >=0 
+          while j >=0
             if out[j] == ')'
               level += 1
             elsif out[j] == '('
@@ -90,17 +90,17 @@ module Moodle2AA::Learnosity::Converters
 
       # very specific fix for 252  handle  (v1) && (v2)
       out = out.gsub(/(\(v[0-9]+\)) *(\&\&|\|\|) *(\(v[0-9]+\))/, "(\\1 != 0) \\2 (\\3 != 0)")
-      
+
       out = out.gsub(/\s+\(/, "(")  #remove whitespace before parens, it's not needed and can confuse ruby
       # add .0 to all integers to force float conversion
       out = out.gsub(/([^.0-9a-zA-Z_]|^)([0-9]+)((?=[^.0-9x])|$)/, "\\1\\2.0")  #remove whitespace before parens, it's not needed and can confuse ruby
-      out = out.gsub(/([0-9]+[eE]-?[0-9]+)[.]0/, "\\1")  #Oops, need to fix anything like 3.4e-4.0 
+      out = out.gsub(/([0-9]+[eE]-?[0-9]+)[.]0/, "\\1")  #Oops, need to fix anything like 3.4e-4.0
       # decimal .1 needs leading 0
       out = out.gsub(/([^0-9]|^)[.]([0-9])/, "\\1 0.\\2")
       #print "CHECK #{expr} : #{old}\n" if expr != old
-                    
+
       out
-      # All ? needs a space in ruby 
+      # All ? needs a space in ruby
       #out = out.gsub(/\?/, " ? ")
     end
 
@@ -114,14 +114,12 @@ module Moodle2AA::Learnosity::Converters
     end
 
     def evaluate(expr,format)
-      
       expr = _replace_vars expr
       expr = _fix_expression expr
       #puts "Evaluate #{expr} => #{new}"
 
       # We should really do some sanitation, but leaving as an eval for now
-      
-      
+
       result = nil
       begin
         self.instance_eval "result=(#{expr})"
@@ -168,48 +166,48 @@ module Moodle2AA::Learnosity::Converters
 
       result
     end
-    
-    def format_by_fmt(fmt, x) 
+
+    def format_by_fmt(fmt, x)
         groupre = '(?:[,_])?'
         regex = /^%([pP]?)((?:[,_])?)(\d*)(?:\.(\d+))?([bodxBODX])$/
-        #if (preg_match(regex, fmt, regs)) 
+        #if (preg_match(regex, fmt, regs))
         if (m = regex.match(fmt))
             #list(fullmatch, showprefix, group, lengthint, lengthfrac, basestr) = regs
             fullmatch, showprefix, group, lengthint, lengthfrac, basestr = m[0], m[1], m[2], m[3], m[4], m[5]
 
             base = 0
             basestr = strtolower(basestr)
-            if (basestr == 'b') 
+            if (basestr == 'b')
                 base = 2
 
-            elsif (basestr == 'o') 
+            elsif (basestr == 'o')
                 base = 8
 
-            elsif (basestr == 'd') 
+            elsif (basestr == 'd')
                 base = 10
 
-            elsif (basestr == 'x') 
+            elsif (basestr == 'x')
                 base = 16
 
-            else 
+            else
                 raise "coding error"
             end
 
             lengthint = intval(lengthint)
             lengthfrac = intval(lengthfrac)
 
-            if (group == ',') 
+            if (group == ',')
                 groupdigits = 3
-            elsif (group == '_') 
+            elsif (group == '_')
                 groupdigits = 4
-            else 
+            else
                 groupdigits = 0
             end
 
             showprefix = strtolower(showprefix)
-            if (showprefix == 'p') 
+            if (showprefix == 'p')
                 showprefix = true
-            else 
+            else
                 showprefix = false
             end
 
@@ -222,10 +220,10 @@ module Moodle2AA::Learnosity::Converters
 
         #// Not a valid format.
     end
-    
+
     def qtype_calculatedformat_format_in_base( x, base=10, lengthint=1, lengthfrac=0, groupdigits=0, showprefix=false )
       digits = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-      
+
       masklengthint = lengthint
 
       answer = x
@@ -249,82 +247,82 @@ module Moodle2AA::Learnosity::Converters
           end
       end
 
-      if (base == 2) 
+      if (base == 2)
         x = sprintf('%0' + (lengthint + lengthfrac).to_s + 'b', answer)
-      elsif (base == 8) 
+      elsif (base == 8)
         x = sprintf('%0' + (lengthint + lengthfrac).to_s + 'o', answer)
-      elsif (base == 16) 
+      elsif (base == 16)
         x = sprintf('%0' + (lengthint + lengthfrac).to_s + 'X', answer)
-      else 
+      else
           width = lengthint
-          if (lengthfrac > 0) 
+          if (lengthfrac > 0)
               #// Include fractional digits and decimal point.
               width += lengthfrac + 1
           end
           x = sprintf('%0' + width.to_s + '.' + lengthfrac.to_s + 'f', answer)
       end
 
-      if (base != 10) 
+      if (base != 10)
           #// Insert radix point if there are fractional digits.
-          if (lengthfrac > 0) 
+          if (lengthfrac > 0)
               #x = substr_replace(x, '.', -lengthfrac, 0)
             x = x.insert(-(lengthfrac+1), '.')
           end
       end
 
-      if ((base == 2) || (base == 8) || (base == 16)) 
-          if (masklengthint < 1) 
+      if ((base == 2) || (base == 8) || (base == 16))
+          if (masklengthint < 1)
               #// Strip leading zeros.
               #x = ltrim(x, '0')
               x = x.gsub(/^0+/, '')
 
-              if (strlen(x) < 1) 
+              if (strlen(x) < 1)
                   x = '0'
 
-              elsif (x[0] == '.') 
+              elsif (x[0] == '.')
                   x = '0' . x
               end
           end
       end
 
-      if (groupdigits > 0) 
+      if (groupdigits > 0)
           #parts = explode('.', x, 2)
           parts = x.split('.', 2)
-          if (parts.count > 1) 
+          if (parts.count > 1)
               integer = parts[0]
               fraction = parts[1]
-          else 
+          else
               integer = x
               fraction = ''
           end
 
           #// Add group separator(s).
           nextgrouppos = strlen(integer) - groupdigits
-          while (nextgrouppos > 0) 
+          while (nextgrouppos > 0)
               #integer = substr_replace(integer, '_', nextgrouppos, 0)
               integer = integer.insert(nextgrouppos, '_')
               nextgrouppos -= groupdigits
           end
 
-          if (strlen(fraction) > 0) 
+          if (strlen(fraction) > 0)
               x = integer + '.' + fraction
-          else 
+          else
               x = integer
           end
       end
 
       prefix = ''
-      if (showprefix) 
-          if (base == 2) 
+      if (showprefix)
+          if (base == 2)
               prefix = '0b'
 
-          elsif (base == 8) 
+          elsif (base == 8)
               prefix = '0o'
 
-          elsif (base == 10) 
+          elsif (base == 10)
               prefix = '0d'
 
-          elsif (base == 16) 
+          elsif (base == 16)
               prefix = '0x'
           end
       end
@@ -332,13 +330,13 @@ module Moodle2AA::Learnosity::Converters
       return sign + prefix + x
     end
 
-    def qtype_calculatedformat_mask_value(x, base, lengthint, lengthfrac) 
-      if ((base != 2) && (base != 8) && (base != 16)) 
+    def qtype_calculatedformat_mask_value(x, base, lengthint, lengthfrac)
+      if ((base != 2) && (base != 8) && (base != 16))
           raise "Illegal base"
       end
 
       numbits = 0;
-      #for (mask = 1; mask < base; mask <<= 1) 
+      #for (mask = 1; mask < base; mask <<= 1)
       #    numbits++;
       #end
       mask = 1
@@ -347,7 +345,7 @@ module Moodle2AA::Learnosity::Converters
           mask = mask << 1
       end
 
-      if (lengthint < 1) 
+      if (lengthint < 1)
           return x
       end
 
@@ -361,7 +359,7 @@ module Moodle2AA::Learnosity::Converters
 
       #// Construct mask with exact bit length.
       mask = 0
-      #for (i = 0; i < numbits; i++) 
+      #for (i = 0; i < numbits; i++)
       #    mask <<= 1;
       #    mask |= 1;
       #end
@@ -382,6 +380,9 @@ module Moodle2AA::Learnosity::Converters
     end
 
     ####  php/moodle functions for use in expressions ####
+
+    def exp(*args) Math.exp(*args) end
+    def Exp(*args) Math.exp(*args) end
 
     def max(*args) args.max end
     def min(*args) args.min end
@@ -427,10 +428,10 @@ module Moodle2AA::Learnosity::Converters
     def is_finite(a) (a.to_f).finite? end
     def is_infinite(a) (a.to_f).infinite? end
     def is_nan(a) (a.to_f).nan? end
-    
+
     def strlen(a) (a.to_s).length end
     def strtolower(a) (a.to_s).downcase end
-    
+
     #def rand(a) Math.abs(a) end
 
   end

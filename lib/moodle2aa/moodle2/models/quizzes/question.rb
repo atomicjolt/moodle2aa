@@ -33,6 +33,7 @@ module Moodle2AA::Moodle2::Models::Quizzes
     attr_accessor :category_name  # for learnosity random conversion
     attr_accessor :category_id  # for learnosity synchronized calc conversion
     attr_accessor :hints, :penalty
+    attr_accessor :question_text_plain
 
     def initialize
       @answers = []

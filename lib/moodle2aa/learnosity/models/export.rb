@@ -11,5 +11,15 @@ module Moodle2AA::Learnosity::Models
       @_item_groups = []
       @files = []
     end
+
+
+    def to_json
+      JSON.generate({
+        activities: @activities,
+        items: @items,
+        questions: @questions,
+        features: @features,
+      })
+    end
   end
 end

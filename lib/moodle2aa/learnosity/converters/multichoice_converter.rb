@@ -1,6 +1,7 @@
 module Moodle2AA::Learnosity::Converters
   class MultiChoiceConverter < QuestionConverter
     register_converter_type 'multichoice'
+    register_converter_type 'multichoicewiris'
 
     def convert_question(moodle_question)
 
@@ -17,7 +18,7 @@ module Moodle2AA::Learnosity::Converters
       data[:ui_style] = {type: "horizontal"}
 
       data[:shuffle_options] = moodle_question.shuffle
-      
+
       options = data[:options] = []
       validation = data[:validation] = {}
       validation[:alt_responses] = []
@@ -62,7 +63,7 @@ module Moodle2AA::Learnosity::Converters
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: IMPORT_STATUS_COMPLETE,
                          questions: [question])
       return item, [question]
