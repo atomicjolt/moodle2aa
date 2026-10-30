@@ -12,7 +12,7 @@ for feature requests and bug reports.
 
 ## Legal
 
-This project is derived from the [moodle2aa](https://github.com/instructure/moodle2aa) gem.
+This project is derived from the [moodle2cc](https://github.com/instructure/moodle2cc) gem.
 
 ## Installation/Usage
 
