@@ -1,3 +1,5 @@
+require 'byebug'
+
 module Moodle2AA::Learnosity::Converters
   class MultiAnswerConverter < QuestionConverter
     register_converter_type 'multianswer'
@@ -14,7 +16,7 @@ module Moodle2AA::Learnosity::Converters
 
       question_text = convert_question_text moodle_question
 
-      while true 
+      while true
         if embedded_questions.count == 0
           # malformed question.  Gaps courses don't have any of these.
           abort "Multi answer with no subquestions??"
@@ -35,7 +37,7 @@ module Moodle2AA::Learnosity::Converters
                                                     # cloze questions into multiple questions.
         validation[:rounding] = "none"
         validation[:valid_response] = {score: 0, value: []}
-        
+
         currenttype = nil
         while subquestion = embedded_questions[0]
           currenttype ||= embedded_questions[0].class
@@ -54,9 +56,9 @@ module Moodle2AA::Learnosity::Converters
           abort "missing cloze marker??" if !after
 
           data[:template] += before+"{{response}}"
-          question_text = after 
+          question_text = after
 
-          case 
+          case
           when currenttype == Moodle2AA::Moodle2::Models::Quizzes::MultichoiceQuestion
             question.type = data[:type] = "clozedropdown"
             data[:case_sensitive] = true
@@ -68,16 +70,15 @@ module Moodle2AA::Learnosity::Converters
             data[:possible_responses] << moodle_subquestion.answers.map {|a| convert_answer_text(a)}
             correct = moodle_subquestion.answers.select {|a| a.fraction.to_f == 1}
             validation[:valid_response][:value] << convert_answer_text(correct[0])
-            
+
             all = moodle_subquestion.answers.select {|a| a.fraction.to_f > 1}
-            if all.count > 1 
+            if all.count > 1
               # We don't convert multiple answers automatically.  It may be possible
               # manually.
               todo << "Check cloze conversion"
               notes << "This cloze question contained multiple correct answers in Moodle, some of which were not converted automatically."
               import_status = IMPORT_STATUS_MANUAL
             end
-            
           when currenttype == Moodle2AA::Moodle2::Models::Quizzes::ShortanswerQuestion
             question.type = data[:type] = "clozetext"
             data[:case_sensitive] = moodle_subquestion.casesensitive
@@ -85,9 +86,9 @@ module Moodle2AA::Learnosity::Converters
             correct = moodle_subquestion.answers.select {|a| a.fraction.to_f == 1}
             validation[:valid_response][:value] << convert_answer_text(correct[0])
             data[:max_length] = [15, convert_answer_text(correct[0]).length+1].min
-            
+
             all = moodle_subquestion.answers.select {|a| a.fraction.to_f > 1}
-            if all.count > 1 
+            if all.count > 1
               # We don't convert multiple answers automatically.  It may be possible
               # manually.
               todo << "Check cloze conversion"
@@ -106,9 +107,9 @@ module Moodle2AA::Learnosity::Converters
                       options: { decimalPlaces: 10 }
                     }]
             validation[:valid_response][:value] << value
-            
+
             all = moodle_subquestion.answers.select {|a| a.fraction.to_f > 1}
-            if all.count > 1 
+            if all.count > 1
               # We don't convert multiple answers automatically.  It may be possible
               # manually.
               todo << "Check cloze conversion"
@@ -119,16 +120,16 @@ module Moodle2AA::Learnosity::Converters
             abort "Unknown subquestion type"
           end
         end
-        
+
         notes = notes.uniq
         data[:instructor_stimulus] = render_conversion_notes(notes)
 
         if embedded_questions.count == 0
           # no parts remaining
           data[:template] += question_text  # add whatever text is left
-          break  
+          break
         end
-        
+
         # otherwise must be a mixture of different answer elements, so loop to
         # create another question.
 
@@ -147,7 +148,7 @@ module Moodle2AA::Learnosity::Converters
               questions.each {|question| question.scale_score(moodle_question.default_mark)}
       questions.each {|question| set_penalty_options(question, moodle_question) }
       questions.each {|question| add_instructor_stimulus(question, moodle_question) }
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: import_status,
                          questions: questions,
                          todo: todo)

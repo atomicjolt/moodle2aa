@@ -44,7 +44,7 @@ module Moodle2AA::Moodle2Converter
 
         cc_course.resolve_question_references!
         @path = Moodle2AA::Learnosity::Migrator.new(@output_dir).migrate(moodle_course)
-        #@path = Moodle2AA::CanvasCC::CartridgeCreator.new(cc_course).create(@output_dir) if Moodle2AA::MigrationReport.generate_archive?
+        # @path = Moodle2AA::CanvasCC::CartridgeCreator.new(cc_course).create(@output_dir) if Moodle2AA::MigrationReport.generate_archive?
         Moodle2AA::MigrationReport.close
       end
       @path

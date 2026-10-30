@@ -16,8 +16,10 @@ module Moodle2AA::Learnosity::Converters
       activity.data.config.regions = "main"
       activity.data.config.navigation.show_intro = true
       activity.data.config.navigation.show_outro = true
-      activity.data.config.title = moodle_quiz.name
-      activity.title = moodle_quiz.name
+      title = moodle_quiz.name
+      max_length = [title.length, 149].min
+      activity.data.config.title = title[0..max_length]
+      activity.title = title[0..max_length]
       source = moodle_quiz_url(moodle_quiz)
       # TODO: handle quiz intro
       activity.data.items, question_random_usages = resolve_item_references(moodle_quiz.question_instances, question_categories, moodle_quiz)
@@ -26,7 +28,9 @@ module Moodle2AA::Learnosity::Converters
       else
         activity.tags[IMPORT_STATUS_TAG_TYPE] = [IMPORT_STATUS_PARTIAL]
       end
-      
+
+      activity.tags['Moodle Course'] = [@moodle_course.shortname]
+
       activity.description = "Moodle source url: #{source}\n"
       if question_random_usages.count > 0
         activity.description += "\n\nRandomization parameters:\n"
@@ -37,7 +41,7 @@ module Moodle2AA::Learnosity::Converters
     end
 
     private
-    
+
     def moodle_quiz_url(moodle_quiz)
       "#{@moodle_course.url}/mod/quiz/view.php?q=#{moodle_quiz.id}"
     end
@@ -72,7 +76,7 @@ module Moodle2AA::Learnosity::Converters
             newquestions = []
             newquestions += cat.questions.select {|q| q.qtype!='random' && q.qtype!='description'}
             #(cat.questions.select {|q| q.type!='random'}).each {|q| puts "#{moodle_quiz.name},#{q.qtype}"}
-            if recurse 
+            if recurse
               # find questions in child categories too
               catids = [cat.id]
               done = false
@@ -80,7 +84,7 @@ module Moodle2AA::Learnosity::Converters
                 new_cats = question_categories.select { |c| catids.include?(c.parent) && !catids.include?(c.id) }
                 # add all questions in new_cats
                 if new_cats.count > 0
-                  new_cats.each do |c| 
+                  new_cats.each do |c|
                     newquestions += c.questions.select {|q| q.qtype!='random' && q.qtype!='description'}
                     #(c.questions.select {|q| q.type!='random'}).each {|q| puts "#{moodle_quiz.name},#{q.qtype}"}
                   end
@@ -90,7 +94,7 @@ module Moodle2AA::Learnosity::Converters
                 end
               end
               # add special tags unique to this recursive group.  Once random questions
-              # work in learnosity, we'll configure the quiz to select from this group. 
+              # work in learnosity, we'll configure the quiz to select from this group.
               # TODO: generate unique tag for hierarchy
               # TODO: finish random questions
             else

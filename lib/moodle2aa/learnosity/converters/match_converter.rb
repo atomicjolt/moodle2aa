@@ -1,6 +1,7 @@
 module Moodle2AA::Learnosity::Converters
   class MatchConverter < QuestionConverter
     register_converter_type 'match'
+    register_converter_type 'matchwiris'
 
     def convert_question(moodle_question)
 
@@ -13,7 +14,7 @@ module Moodle2AA::Learnosity::Converters
       data[:is_math] = has_math?(data[:stimulus])
       data[:instantfeedback] = true
       question.type = data[:type] = "association"
-      
+
       data[:duplicate_responses] = true  # moodle always allows this
 
       validation = data[:validation] = {}
@@ -71,7 +72,7 @@ module Moodle2AA::Learnosity::Converters
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: IMPORT_STATUS_COMPLETE,
                          questions: [question])
       return item, [question]

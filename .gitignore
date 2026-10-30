@@ -21,3 +21,5 @@ tmp
 vendor
 out
 moodle_test.mbz
+.DS_Store
+.byebug_history

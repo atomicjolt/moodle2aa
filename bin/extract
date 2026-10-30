@@ -1,0 +1,88 @@
+#!/usr/bin/env ruby
+require 'rubygems'
+require 'nokogiri'
+require 'pp'
+require 'cgi'
+
+
+def html_entity_decode(str)
+  CGI.unescapeHTML(str)
+end
+
+# Read input from STDIN (or use ARGV[0] if provided)
+input = ARGV[0]
+
+# Decode HTML entities to get valid XML
+decoded_input = html_entity_decode(input)
+
+begin
+  # Parse the XML
+  doc = Nokogiri::XML(decoded_input) { |config| config.strict }
+
+  # Extract the CAS session if available
+  cas_session = doc.at_xpath('//wirisCasSession')
+  if cas_session && !cas_session.children.empty?
+    # Extract CDATA content from wirisCasSession
+    cdata_content = cas_session.children.first.text
+    begin
+      cas_content = Nokogiri::XML(cdata_content) { |config| config.noblanks }
+      puts "CAS Session Data:"
+      puts cas_content.to_xml
+    rescue => e
+      puts "Error parsing CAS session CDATA: #{e.message}"
+      puts "Raw CDATA content:"
+      puts cdata_content
+    end
+  end
+
+  # Extract the correct answers
+  correct_answers = doc.xpath('//correctAnswer')
+  if !correct_answers.empty?
+    puts "\nCorrect Answers:"
+    correct_answers.each_with_index do |answer, index|
+      puts "Answer #{index + 1}:"
+      if !answer.children.empty? && answer.children.first.cdata?
+        begin
+          answer_content = Nokogiri::XML(answer.children.first.text) { |config| config.noblanks }
+          puts answer_content.to_xml
+        rescue => e
+          puts "Error parsing answer CDATA: #{e.message}"
+          puts answer.children.first.text
+        end
+      else
+        pp answer.content
+      end
+    end
+  end
+
+  # Extract assertions if available
+  assertions = doc.xpath('//assertion')
+  if !assertions.empty?
+    puts "\nAssertions:"
+    assertions.each do |assertion|
+      puts "- #{assertion['name']}"
+      assertion.xpath('./param').each do |param|
+        param_content = param.children.first.cdata? ? param.children.first.text : param.content
+        puts "  #{param['name']}: #{param_content}"
+      end
+    end
+  end
+
+  # Extract options if available
+  options = doc.xpath('//option')
+  if !options.empty?
+    puts "\nOptions:"
+    options.each do |option|
+      puts "- #{option['name']}: #{option.content}"
+    end
+  end
+
+  # Print the entire document structure in a more readable format
+  puts "\nComplete XML Structure:"
+  puts doc.to_xml(indent: 2)
+
+rescue => e
+  puts "Error processing the XML: #{e.message}"
+  puts e.backtrace
+end
+

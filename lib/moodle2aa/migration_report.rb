@@ -19,7 +19,7 @@ module Moodle2AA
                   "generate_report" => false,
                   "convert_unknown_qtypes" => false,
                   "convert_unknown_activities" => false,
-    }
+                  "unused_question_mode" => 'keep' }
 
     def self.options()
       @@options
@@ -28,7 +28,7 @@ module Moodle2AA
     def self.options=(options)
       @@options = @@options.merge(options)
     end
-    
+
     def self.source()
       @@source
     end
@@ -56,9 +56,13 @@ module Moodle2AA
     def self.convert_unknown_activities?()
       @@options["convert_unknown_activities"]
     end
-    
+
     def self.group_by_quiz_page?()
       @@options["group_by_quiz_page"]
+    end
+
+    def self.unused_question_mode()
+      @@options["unused_question_mode"]
     end
 
     def self.create(out_dir, moodle_course)

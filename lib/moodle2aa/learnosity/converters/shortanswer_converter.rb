@@ -32,7 +32,7 @@ module Moodle2AA::Learnosity::Converters
 
         response = {score: answer.fraction.to_f}
         # deal with wildcards, when we can
-        
+
         # leading/trailing *'s become substring matches
         if value[0] == '*'
           response['matching_rule'] = 'contains'
@@ -67,7 +67,7 @@ module Moodle2AA::Learnosity::Converters
       question.scale_score(moodle_question.default_mark)
       set_penalty_options(question, moodle_question)
       add_instructor_stimulus(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: import_status,
                          questions: [question],
                          todo: todo)

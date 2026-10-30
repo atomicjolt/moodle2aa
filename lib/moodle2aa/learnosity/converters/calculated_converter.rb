@@ -54,7 +54,7 @@ d23c9402-6e58-f49e-9374-a2452b4adcfc
 de4ad4e9-52e9-3b38-e8c9-25d6ea22fbf3_1
 ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       )
-#      if tofix.include? item.reference 
+#      if tofix.include? item.reference
 #        dump = expr_converter.dump_csv
 #        print "===START===\n"+@moodle_course.fullname+"\n"+item.reference+"  -  "+moodle_question.name+"\n"+dump+"\n===END===\n"
 #      end
@@ -74,18 +74,22 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       end
 
       question.scale_score(moodle_question.default_mark)
+      puts '------------------------------'
+      puts expr_converter.generate_data_table_engine_script
+      puts '------------------------------'
       set_penalty_options(question, moodle_question)
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: import_status,
                          questions: [question],
                          dynamic_content_data: expr_converter.generate_dynamic_content_data,
+                         data_table_script: expr_converter.generate_data_table_engine_script,
                          todo: todo)
       #if expr_converter.has_truncated_rows?
         #puts "TRUNCATED_DATASET: #{item.reference}: '#{moodle_question.name}'"
       #end
       return item, [question]
     end
-    
+
     def convert_calculated_subquestion(moodle_question, reference, expr_converter)
       question = Moodle2AA::Learnosity::Models::Question.new
       question.reference = reference
@@ -95,7 +99,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       import_status = IMPORT_STATUS_COMPLETE
 
       data = question.data
-      
+
       data[:stimulus] = convert_question_text moodle_question
       data[:stimulus] = convert_calculated_text data[:stimulus], expr_converter, moodle_question
 
@@ -103,22 +107,22 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       question.type = data[:type] = "formulaV2"
       data[:ui_style] = {type: "no-input-ui"}
       data[:is_math] = true
-      
+
       validation = data[:validation] = {}
       validation[:scoring_type] = "exactMatch"
       validation[:alt_responses] = []
-      
+
       correct_feedback = []
       incorrect_feedback = []
       numcorrect = 0
       moodle_question.all_answers.each do |answer|
         # TODO: numerical per-response feedback
         answer_text = convert_calculated_answer answer.answer_text, expr_converter, moodle_question
-        options = moodle_question.all_options[answer.id.to_i]
+        options = moodle_question.all_options[answer.id.to_i] || {}
         decimal_places = 10
         if options[:tolerance].to_f != 0
           case options[:tolerancetype].to_i
-          when RELATIVE_ERROR 
+          when RELATIVE_ERROR
             answer_text = "#{answer_text} \\pm #{options[:tolerance]}*(#{answer_text})"
           when NOMINAL_ERROR
             answer_text += " \\pm #{options[:tolerance]}"
@@ -174,18 +178,18 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
         todo << "Check per response feedback"
         import_status = IMPORT_STATUS_PARTIAL
       end
-      
+
       if error = expr_converter.get_error
         import_status = IMPORT_STATUS_MANUAL
         todo << "Check formula error"
         notes << error
       end
-      
+
       expressionnotes = render_expression_variables expr_converter.get_expression_variables
       if expressionnotes
         notes << expressionnotes
       end
-      
+
       # add equestion information
       data[:instructor_stimulus] = render_conversion_notes(notes)
 
@@ -197,11 +201,11 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       question.reference = reference
       notes = []
       todo = []
-      
+
       import_status = IMPORT_STATUS_COMPLETE
 
       data = question.data
-      
+
       data[:stimulus] = convert_question_text moodle_question
       data[:stimulus] = convert_calculated_text data[:stimulus], expr_converter, moodle_question
 
@@ -210,7 +214,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       question.type = data[:type] = "shorttext"
       data[:ui_style] = {type: "no-input-ui"}
       data[:is_math] = true
-      
+
       validation = data[:validation] = {}
       validation[:scoring_type] = "exactMatch"
       validation[:alt_responses] = []
@@ -219,7 +223,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
         #import_status = IMPORT_STATUS_PARTIAL
         #notes << "Question may allow answers of varying length, for example with or without leading zeros.  Short answer conversion doesn't allow this."
       #end
-        
+
       correct_feedback = []
       incorrect_feedback = []
       numcorrect = 0
@@ -258,7 +262,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
           end
         end
       end
-      
+
       data[:metadata].merge!(convert_feedback( moodle_question ))
       if data[:metadata][:general_feedback]
         data[:metadata][:general_feedback] = convert_calculated_text data[:metadata][:general_feedback], expr_converter, moodle_question
@@ -278,7 +282,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
         todo << "Check per response feedback"
         import_status = IMPORT_STATUS_PARTIAL
       end
-      
+
       if error = expr_converter.get_error
         import_status = IMPORT_STATUS_MANUAL
         todo << "Check formula error"
@@ -290,13 +294,13 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       if expressionnotes
         notes << expressionnotes
       end
-      
+
 
       data[:instructor_stimulus] = render_conversion_notes(notes)
 
       return question, import_status, todo
     end
-    
+
     def convert_calculated_multi_subquestion(moodle_question, reference, expr_converter)
       question = Moodle2AA::Learnosity::Models::Question.new
       question.reference = reference
@@ -306,25 +310,25 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       import_status = IMPORT_STATUS_PARTIAL
 
       data = question.data
-      
+
       data[:stimulus] = convert_question_text moodle_question
       data[:stimulus] = convert_calculated_text data[:stimulus], expr_converter, moodle_question
 
       data[:instantfeedback] = true
       question.type = data[:type] = "mcq"
-      
+
       data[:multiple_responses] = !moodle_question.single
       data[:ui_style] = {type: "horizontal"}
 
       data[:is_math] = true
-      
+
       validation = data[:validation] = {}
       validation[:scoring_type] = "exactMatch"
       validation[:alt_responses] = []
       data[:shuffle_options] = moodle_question.shuffleanswers
 
       options = data[:options] = []
-      
+
       data[:metadata] = {}
       rationale = data[:metadata][:distractor_rationale_response_level] = []
 
@@ -365,7 +369,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       end
       options.each { |option| data[:is_math] ||= has_math?(option[:label]) }
       rationale.each { |feedback| data[:is_math] ||= has_math?(feedback) }
-      
+
       data[:metadata].merge!(convert_feedback( moodle_question ))
       if data[:metadata][:general_feedback]
         data[:metadata][:general_feedback] = convert_calculated_text data[:metadata][:general_feedback], expr_converter, moodle_question
@@ -386,12 +390,12 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
         notes << error
         todo << "Check formula error"
       end
-      
+
       expressionnotes = render_expression_variables expr_converter.get_expression_variables
       if expressionnotes
         notes << expressionnotes
       end
-      
+
       # add equestion information
       data[:instructor_stimulus] = render_conversion_notes(notes)
 
@@ -445,13 +449,14 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
       if expr_converter.has_shuffled_vars?
         extra_tags['TODO'] = ['Check merged datatable']
       end
-      item = create_item(moodle_question: moodle_question, 
+      item = create_item(moodle_question: moodle_question,
                          import_status: group_import_status,
                          content: content,
                          extra_tags: extra_tags,
                          dynamic_content_data: expr_converter.generate_dynamic_content_data,
+                         data_table_script: expr_converter.generate_data_table_engine_script,
                          todo: todo)
-      
+
       #if expr_converter.has_truncated_rows?
         #puts "TRUNCATED_DATASET: #{item.reference}: '#{moodle_question.name}'"
       #end
@@ -459,17 +464,17 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
     end
 
 
-    # Convert text with embedded variables and expressions 
+    # Convert text with embedded variables and expressions
     def convert_calculated_text(text, expr_converter, moodle_question)
       substitute_embedded_expressions(text, expr_converter, moodle_question)
     end
-    
+
     # Convert answer text
     def convert_calculated_answer(text, expr_converter, moodle_question)
       as_expr, as_var = expr_converter.convert_answer(text, nil, moodle_question)
       as_var # use the variable by default
     end
-    
+
     def convert_calculated_format_answer(text, expr_converter, moodle_question)
       out = []
       opts = moodle_question.calculatedformat_options
@@ -497,7 +502,7 @@ ed8482fc-eedd-fe3f-ef44-ba32d77e5f57_1
                   else
                     ''
                   end
-      
+
       format = "%"+separator+lengthint+'.'+lengthfrac+base
       as_expr, as_var = expr_converter.convert_answer(text, format, moodle_question)
 

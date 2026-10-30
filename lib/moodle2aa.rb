@@ -31,6 +31,8 @@ module Moodle2AA
 
   autoload :ResourceFactory, 'moodle2aa/resource_factory'
 
+  autoload :OutputLogger, 'moodle2aa/output_logger'
+
   module CC
     autoload :Assessment, 'moodle2aa/cc/assessment'
     autoload :Assignment, 'moodle2aa/cc/assignment'
